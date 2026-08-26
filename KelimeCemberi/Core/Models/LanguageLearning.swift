@@ -5,7 +5,6 @@ enum LearningLanguage: String, CaseIterable, Identifiable, Codable, Sendable {
     var id: String { rawValue }
     var title: String { switch self { case .english: "İngilizce"; case .italian: "İtalyanca"; case .german: "Almanca" } }
     var nativeTitle: String { switch self { case .english: "English"; case .italian: "Italiano"; case .german: "Deutsch" } }
-    var flag: String { switch self { case .english: "🇬🇧"; case .italian: "🇮🇹"; case .german: "🇩🇪" } }
     var resourceName: String { "parola_cemberi_\(rawValue)_cefr" }
     var alphabet: [String] {
         switch self {

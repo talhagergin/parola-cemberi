@@ -13,7 +13,7 @@ struct LanguageSelectionView: View {
                     Button { onSelect(language) } label: {
                         GlassPanel {
                             HStack(spacing: 18) {
-                                Text(language.flag).font(.system(size: 44))
+                                LanguageFlagView(language: language).frame(width: 58, height: 40)
                                 VStack(alignment: .leading) {
                                     Text(language.title).font(.title3.bold()).foregroundStyle(.white)
                                     Text(language.nativeTitle).foregroundStyle(GameColors.textSecondary)
@@ -41,7 +41,7 @@ struct LevelSelectionView: View {
             GameBackground()
             ScrollView {
                 VStack(spacing: GameSpacing.lg) {
-                    ScreenHeader(title: "\(language.flag) \(language.title.uppercased())", onBack: onBack)
+                    ScreenHeader(title: language.title.uppercased(), flag: language, onBack: onBack)
                     Text("CEFR seviyeni seç").foregroundStyle(GameColors.textSecondary)
                     LazyVGrid(columns: [.init(.flexible()), .init(.flexible())], spacing: 14) {
                         ForEach(CEFRLevel.allCases) { level in
@@ -91,7 +91,7 @@ struct LanguageLessonView: View {
             GeometryReader { proxy in
                 ScrollView {
                     VStack(spacing: 12) {
-                        ScreenHeader(title: "\(language.flag) \(level.rawValue) ÇEMBERİ", onBack: onExit)
+                        ScreenHeader(title: "\(level.rawValue) ÇEMBERİ", flag: language, onBack: onExit)
                         LanguageCircleWheel(items: letters, remainingSeconds: remainingSeconds, score: score, streak: streak)
                             .frame(maxHeight: min(proxy.size.width - 20, proxy.size.height * 0.51))
                         if let question = activeItem?.question {
@@ -211,6 +211,56 @@ struct LanguageLessonView: View {
     private func finish() {
         timerTask?.cancel(); activeIndex = nil; isFinished = true
         for index in letters.indices where [.waiting, .active, .passed].contains(letters[index].status) { letters[index].status = .wrong }
+    }
+}
+
+struct LanguageFlagView: View {
+    let language: LearningLanguage
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                switch language {
+                case .english:
+                    Color(red: 0.05, green: 0.16, blue: 0.42)
+                    diagonalCross(in: proxy.size, color: .white, width: proxy.size.height * 0.24)
+                    diagonalCross(in: proxy.size, color: Color(red: 0.78, green: 0.05, blue: 0.12), width: proxy.size.height * 0.10)
+                    Rectangle().fill(.white).frame(height: proxy.size.height * 0.30)
+                    Rectangle().fill(.white).frame(width: proxy.size.height * 0.30)
+                    Rectangle().fill(Color(red: 0.78, green: 0.05, blue: 0.12)).frame(height: proxy.size.height * 0.16)
+                    Rectangle().fill(Color(red: 0.78, green: 0.05, blue: 0.12)).frame(width: proxy.size.height * 0.16)
+                case .italian:
+                    HStack(spacing: 0) {
+                        Color(red: 0.0, green: 0.57, blue: 0.27)
+                        Color.white
+                        Color(red: 0.81, green: 0.07, blue: 0.15)
+                    }
+                case .german:
+                    VStack(spacing: 0) {
+                        Color.black
+                        Color(red: 0.86, green: 0.0, blue: 0.08)
+                        Color(red: 1.0, green: 0.80, blue: 0.0)
+                    }
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: max(3, proxy.size.height * 0.14)))
+            .overlay {
+                RoundedRectangle(cornerRadius: max(3, proxy.size.height * 0.14))
+                    .stroke(.white.opacity(0.45), lineWidth: 1)
+            }
+        }
+        .aspectRatio(1.45, contentMode: .fit)
+        .accessibilityLabel("\(language.title) bayrağı")
+    }
+
+    private func diagonalCross(in size: CGSize, color: Color, width: CGFloat) -> some View {
+        Path { path in
+            path.move(to: .zero)
+            path.addLine(to: CGPoint(x: size.width, y: size.height))
+            path.move(to: CGPoint(x: size.width, y: 0))
+            path.addLine(to: CGPoint(x: 0, y: size.height))
+        }
+        .stroke(color, style: StrokeStyle(lineWidth: width, lineCap: .butt))
     }
 }
 

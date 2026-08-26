@@ -42,7 +42,15 @@ struct ModeSelectionView: View {
 
 struct ScreenHeader: View {
     let title: String
+    let flag: LearningLanguage?
     let onBack: () -> Void
+
+    init(title: String, flag: LearningLanguage? = nil, onBack: @escaping () -> Void) {
+        self.title = title
+        self.flag = flag
+        self.onBack = onBack
+    }
+
     var body: some View {
         HStack {
             Button(action: onBack) {
@@ -50,7 +58,10 @@ struct ScreenHeader: View {
                     .background(GameColors.panel.opacity(0.8), in: RoundedRectangle(cornerRadius: 14))
             }.accessibilityLabel("Geri")
             Spacer()
-            Text(title).font(.system(.title3, design: .rounded, weight: .heavy)).foregroundStyle(.white)
+            HStack(spacing: 9) {
+                if let flag { LanguageFlagView(language: flag).frame(width: 32, height: 22) }
+                Text(title).font(.system(.title3, design: .rounded, weight: .heavy)).foregroundStyle(.white)
+            }
             Spacer()
             Color.clear.frame(width: 44, height: 44)
         }
