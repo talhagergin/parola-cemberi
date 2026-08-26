@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import uuid
+from collections import Counter
 from pathlib import Path
 
 NAMESPACE = uuid.UUID("c78c1676-9d72-4b05-90f0-c40d65a44e5c")
@@ -70,6 +71,42 @@ EXTRA_PACKS = {
 "C2": [("ANACHRONISTISCH","Çağdışı","Sıfatlar"),("BYZANTINISCH","Aşırı karmaşık","Sıfatlar"),("UMSCHWEIF","Dolaylı anlatım","İletişim"),("SCHÄDLICH","Zararlı","Sıfatlar"),("VERSCHÄRFEN","Daha kötü hâle getirmek","Fiiller"),("TRÜGERISCH","Safsataya dayalı","Sıfatlar"),("HERMENEUTIK","Yorum bilimi","Bilim"),("IKONOKLASTISCH","Yerleşik inançlara karşı çıkan","Sıfatlar"),("GEISTLOS","Yüzeysel ve sıkıcı","Sıfatlar"),("SCHURKISCH","Hilekâr","Sıfatlar"),("DÜSTER","Kasvetli","Sıfatlar"),("VERLOGEN","Yalancı","Sıfatlar"),("LÄSSIG","Aldırışsız","Sıfatlar"),("VORGEBLICH","Görünürdeki","Sıfatlar"),("ALLTÄGLICH","Gündelik","Sıfatlar"),("SCHARFSINNIG","Bilgece","Sıfatlar"),("SCHARFZÜNGIG","Keskin ve etkili","Sıfatlar"),("UNHALTBAR","Savunulamaz","Sıfatlar"),("WAHRSCHEINLICHKEIT","Gerçeğe benzerlik","Soyut Kavramlar"),("ZEITGEIST","Çağın ruhu","Kültür")]
 }}
 
+ALPHABETS = {
+    "english": list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+    "italian": list("ABCDEFGHILMNOPQRSTUVZ"),
+    "german": list("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ"),
+}
+
+# Her dil/seviye çemberindeki her harfin oynanabilir olmasını garanti eden kayıtlar.
+# Bunlar yalnızca ilgili harf temel 40 soruda yoksa, fazla temsil edilen bir harfin
+# kaydıyla değiştirilir; böylece seviye başına soru sayısı 40 olarak kalır.
+COVERAGE_PACKS = {
+    "english": {
+        "A1": [("UMBRELLA", "Şemsiye", "Eşyalar"), ("VAN", "Minibüs", "Ulaşım"), ("XYLOPHONE", "Ksilofon", "Müzik"), ("YELLOW", "Sarı", "Renkler"), ("ZOO", "Hayvanat bahçesi", "Yerler")],
+        "A2": [("UNIFORM", "Üniforma", "Giyim"), ("VILLAGE", "Köy", "Yerler"), ("X-RAY", "Röntgen", "Sağlık"), ("YOGURT", "Yoğurt", "Yiyecek ve İçecek"), ("ZIPPER", "Fermuar", "Giyim")],
+        "B1": [("UPDATE", "Güncellemek", "Teknoloji"), ("WASTE", "Atık", "Çevre"), ("XENOPHOBIA", "Yabancı düşmanlığı", "Toplum"), ("YOUTH", "Gençlik", "İnsanlar"), ("ZONE", "Bölge", "Yerler")],
+        "B2": [("KINETIC", "Hareketle ilgili", "Bilim"), ("WELFARE", "Refah", "Toplum"), ("XENOPHOBIC", "Yabancı düşmanı", "Sıfatlar"), ("YEARNING", "Özlem", "Duygular"), ("ZEAL", "Gayret", "Duygular")],
+        "C1": [("BREVITY", "Özlülük", "İletişim"), ("GRANULAR", "İnce ayrıntılı", "Sıfatlar"), ("KUDOS", "Takdir", "İletişim"), ("XENIAL", "Konuksever", "Sıfatlar")],
+        "C2": [("XENODOCHIAL", "Yabancılara karşı konuksever", "Sıfatlar"), ("YARE", "Çevik ve hazır", "Sıfatlar")],
+    },
+    "italian": {
+        "A1": [],
+        "A2": [("HO", "Sahibim; avere fiilinin ben çekimi", "Fiiller"), ("QUINDI", "Bu yüzden", "Bağlaçlar")],
+        "B1": [("HOBBY", "Hobi", "Günlük Yaşam"), ("URGENZA", "Aciliyet", "Soyut Kavramlar"), ("ZONA", "Bölge", "Yerler")],
+        "B2": [("BIASIMO", "Kınama", "Duygular"), ("HABITAT", "Yaşam alanı", "Doğa"), ("QUESITO", "Soru ve mesele", "İletişim"), ("UTOPIA", "Ütopya", "Düşünce"), ("ZELO", "Gayret", "Duygular")],
+        "C1": [("BENEVOLO", "İyiliksever", "Sıfatlar"), ("HUMUS", "Toprağın organik katmanı", "Doğa"), ("NESSO", "Bağlantı", "Soyut Kavramlar"), ("UNIVOCO", "Tek anlamlı", "Sıfatlar"), ("VAGLIARE", "Dikkatle değerlendirmek", "Fiiller")],
+        "C2": [("CAVILLO", "Önemsiz ve kurnazca itiraz", "İletişim"), ("HINTERLAND", "İç bölge", "Yerler"), ("TAUTOLOGIA", "Aynı düşünceyi yineleme", "İletişim"), ("ZELOTA", "Bağnaz taraftar", "İnsanlar")],
+    },
+    "german": {
+        "A1": [("COMPUTER", "Bilgisayar", "Teknoloji"), ("QUARK", "Lor peyniri", "Yiyecek ve İçecek"), ("UHR", "Saat", "Eşyalar"), ("VATER", "Baba", "İnsanlar"), ("XYLOFON", "Ksilofon", "Müzik"), ("YOGA", "Yoga", "Sağlık"), ("ÜBEN", "Pratik yapmak", "Fiiller")],
+        "A2": [("CAMPING", "Kamp", "Seyahat"), ("IDEE", "Fikir", "Düşünce"), ("OBST", "Meyve", "Yiyecek ve İçecek"), ("PARTY", "Parti", "Günlük Yaşam"), ("QUITTUNG", "Makbuz", "Alışveriş"), ("URLAUB", "Tatil", "Seyahat"), ("XYLOFON", "Ksilofon", "Müzik"), ("YOGHURT", "Yoğurt", "Yiyecek ve İçecek"), ("ÄNDERN", "Değiştirmek", "Fiiller"), ("ÖFFENTLICH", "Halka açık", "Sıfatlar")],
+        "B1": [("CHAOS", "Kaos", "Soyut Kavramlar"), ("DISKUSSION", "Tartışma", "İletişim"), ("INHALT", "İçerik", "İletişim"), ("JEDOCH", "Ancak", "Bağlaçlar"), ("KONFLIKT", "Çatışma", "Toplum"), ("ORGANISATION", "Organizasyon", "İş"), ("PFLICHT", "Görev", "İş"), ("XENOPHOBIE", "Yabancı düşmanlığı", "Toplum"), ("YACHT", "Yat", "Seyahat"), ("ÄHNLICH", "Benzer", "Sıfatlar"), ("ÖKONOMIE", "Ekonomi", "Toplum"), ("ÜBERZEUGUNG", "İnanç ve kanaat", "Düşünce")],
+        "B2": [("CHANCENGLEICHHEIT", "Fırsat eşitliği", "Toplum"), ("DILEMMA", "İkilem", "Düşünce"), ("JURIST", "Hukukçu", "İnsanlar"), ("KONSENS", "Fikir birliği", "Toplum"), ("QUOTE", "Oran veya kota", "Toplum"), ("SACHLICH", "Nesnel", "Sıfatlar"), ("XENOPHOB", "Yabancı düşmanı", "Sıfatlar"), ("YUPPIE", "Kentli genç profesyonel", "İnsanlar"), ("ÄQUIVALENT", "Eşdeğer", "Sıfatlar"), ("ÖKOLOGISCH", "Ekolojik", "Doğa")],
+        "C1": [("CHRONISCH", "Kronik", "Sıfatlar"), ("HINREICHEND", "Yeterli", "Sıfatlar"), ("JUXTAPOSITION", "Yan yana koyma", "Düşünce"), ("OBSOLET", "Kullanımdan kalkmış", "Sıfatlar"), ("XENOPHIL", "Yabancı kültürlere açık", "Sıfatlar"), ("YPSILON", "Y harfinin Almanca adı", "Dil"), ("ZWIESPÄLTIG", "İkircikli", "Sıfatlar"), ("ÄSTHETISCH", "Estetik", "Sıfatlar"), ("ÖKONOMISCH", "Ekonomik", "Sıfatlar"), ("ÜBERGEORDNET", "Üst düzey ve kapsayıcı", "Sıfatlar")],
+        "C2": [("CHIMÄRE", "Kuruntu ve hayal", "Düşünce"), ("EPISTEMOLOGIE", "Bilgi felsefesi", "Bilim"), ("FAKTIZITÄT", "Olgusallık", "Düşünce"), ("JOVIAL", "Neşeli ve dostça", "Sıfatlar"), ("KONTINGENZ", "Olumsallık", "Düşünce"), ("METONYMIE", "Ad aktarması", "Dil"), ("NIHILISMUS", "Hiççilik", "Düşünce"), ("QUIESZENZ", "Durağanlık", "Soyut Kavramlar"), ("XENISMUS", "Yabancı dil ögesi", "Dil"), ("YLEM", "Evrenin varsayımsal ilk maddesi", "Bilim"), ("ÄQUIVOKATION", "Anlam bulanıklığı", "Dil"), ("ÖKUMENISCH", "Mezhepler arası", "Toplum"), ("ÜBERSCHWÄNGLICH", "Aşırı coşkulu", "Sıfatlar")],
+    },
+}
+
 def normalize_answer(answer):
     return answer.upper()
 
@@ -92,14 +129,41 @@ def make_record(key, config, level, answer, clue, category):
         "cefrLevel": level
     }
 
+def ensure_alphabet_coverage(key, config, level, records):
+    counts = Counter(record["initialLetter"] for record in records)
+    missing = [letter for letter in ALPHABETS[key] if counts[letter] == 0]
+    candidates = {
+        normalize_answer(entry[0])[0]: entry
+        for entry in COVERAGE_PACKS[key][level]
+    }
+    for letter in missing:
+        if letter not in candidates:
+            raise ValueError(f"{key} {level}: {letter} harfi için kapsama sorusu yok")
+        victim_index = next(
+            (index for index in range(len(records) - 1, -1, -1)
+             if counts[records[index]["initialLetter"]] > 1),
+            None,
+        )
+        if victim_index is None:
+            raise ValueError(f"{key} {level}: {letter} için değiştirilebilir soru yok")
+        victim_letter = records[victim_index]["initialLetter"]
+        counts[victim_letter] -= 1
+        records[victim_index] = make_record(key, config, level, *candidates[letter])
+        counts[letter] += 1
+    uncovered = set(ALPHABETS[key]) - set(counts)
+    if uncovered:
+        raise ValueError(f"{key} {level}: eksik harfler {sorted(uncovered)}")
+    return records
+
 def main():
     output_dir = Path(__file__).resolve().parents[1] / "KelimeCemberi" / "Resources" / "Questions" / "Languages"
     output_dir.mkdir(parents=True, exist_ok=True)
     for key, config in PACKS.items():
         records = []
         for level, entries in config["levels"].items():
-            records.extend(make_record(key, config, level, *entry) for entry in entries)
-            records.extend(make_record(key, config, level, *entry) for entry in EXTRA_PACKS[key][level])
+            level_records = [make_record(key, config, level, *entry) for entry in entries]
+            level_records.extend(make_record(key, config, level, *entry) for entry in EXTRA_PACKS[key][level])
+            records.extend(ensure_alphabet_coverage(key, config, level, level_records))
         path = output_dir / f"parola_cemberi_{key}_cefr.json"
         path.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"{path.name}: {len(records)} kayıt")

@@ -20,7 +20,13 @@ final class QuestionLoaderTests: XCTestCase {
             XCTAssertEqual(questions.count, 240, language.title)
             XCTAssertEqual(Set(questions.map(\.id)).count, 240, language.title)
             for level in CEFRLevel.allCases {
-                XCTAssertEqual(questions.count { $0.cefrLevel == level }, 40, "\(language.title) \(level.rawValue)")
+                let levelQuestions = questions.filter { $0.cefrLevel == level }
+                XCTAssertEqual(levelQuestions.count, 40, "\(language.title) \(level.rawValue)")
+                XCTAssertEqual(
+                    Set(levelQuestions.map(\.initialLetter)),
+                    Set(language.alphabet),
+                    "\(language.title) \(level.rawValue) çemberinde sorusuz harf var"
+                )
             }
             XCTAssertTrue(questions.allSatisfy { $0.letterCount == $0.answer.filter(\.isLetter).count })
         }

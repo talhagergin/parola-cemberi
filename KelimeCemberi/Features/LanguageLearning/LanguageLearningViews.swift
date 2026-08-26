@@ -81,6 +81,7 @@ struct LanguageLessonView: View {
     @State private var streak = 0
     @State private var remainingSeconds = 120
     @State private var isFinished = false
+    @State private var preparationError: String?
     @State private var timerTask: Task<Void, Never>?
 
     private var activeItem: LanguageCircleItem? { activeIndex.flatMap { letters.indices.contains($0) ? letters[$0] : nil } }
@@ -124,6 +125,15 @@ struct LanguageLessonView: View {
                 }.foregroundStyle(feedback.correct ? GameColors.success : GameColors.danger).padding(24).background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
             }
             if isFinished { resultOverlay }
+            if let preparationError {
+                GlassPanel {
+                    VStack(spacing: 14) {
+                        Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 42)).foregroundStyle(GameColors.orange)
+                        Text(preparationError).multilineTextAlignment(.center).foregroundStyle(.white)
+                        Button("SEVİYELERE DÖN", action: onExit).buttonStyle(GameButtonStyle(kind: .primary))
+                    }.padding(24)
+                }.padding(28)
+            }
         }
         .preferredColorScheme(.dark)
         .onAppear { prepare() }
@@ -147,9 +157,15 @@ struct LanguageLessonView: View {
     private func prepare() {
         guard letters.isEmpty else { return }
         let grouped = Dictionary(grouping: sourceQuestions, by: { $0.initialLetter.uppercased() })
-        letters = language.alphabet.map { letter in
-            let question = grouped[letter]?.randomElement()
-            return LanguageCircleItem(letter: letter, question: question, status: question == nil ? .unavailable : .waiting)
+        let missingLetters = language.alphabet.filter { grouped[$0]?.isEmpty != false }
+        guard missingLetters.isEmpty else {
+            preparationError = "Bu seviyenin soru paketi eksik. Çember başlatılamadı."
+            return
+        }
+        letters = language.alphabet.compactMap { letter in
+            grouped[letter]?.randomElement().map {
+                LanguageCircleItem(letter: letter, question: $0, status: .waiting)
+            }
         }
         activateNext(after: -1)
         timerTask = Task { @MainActor in
@@ -199,7 +215,7 @@ struct LanguageLessonView: View {
 }
 
 private struct LanguageFeedback { let correct: Bool; let title: String }
-private enum LanguageCircleStatus { case waiting, active, correct, wrong, passed, unavailable }
+private enum LanguageCircleStatus { case waiting, active, correct, wrong, passed }
 private struct LanguageCircleItem: Identifiable {
     let letter: String
     let question: LanguageLearningQuestion?
@@ -240,7 +256,7 @@ private struct LanguageCircleTile: View {
     var body: some View {
         Text(item.letter)
             .font(.system(size: size * 0.5, weight: .heavy, design: .rounded))
-            .foregroundStyle(.white.opacity(item.status == .unavailable ? 0.4 : 1))
+            .foregroundStyle(.white)
             .frame(width: size, height: size * 1.12)
             .background(fill(item.status), in: RoundedRectangle(cornerRadius: size * 0.25))
             .overlay { RoundedRectangle(cornerRadius: size * 0.25).stroke(border, lineWidth: item.status == .active ? 2.5 : 1) }
@@ -254,7 +270,6 @@ private struct LanguageCircleTile: View {
         case .correct: [Color(red: 0.42, green: 0.91, blue: 0.25), Color(red: 0.08, green: 0.48, blue: 0.15)]
         case .wrong: [Color(red: 1, green: 0.34, blue: 0.4), Color(red: 0.6, green: 0.05, blue: 0.13)]
         case .passed: [GameColors.purple, GameColors.panel]
-        case .unavailable: [GameColors.muted.opacity(0.5), GameColors.background]
         }
         return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
     }
