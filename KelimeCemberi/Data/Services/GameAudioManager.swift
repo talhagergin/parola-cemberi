@@ -23,21 +23,14 @@ final class GameAudioManager: AudioManaging {
         engine.attach(player)
         let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
         engine.connect(player, to: engine.mainMixerNode, format: format)
-        do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.ambient, mode: .default, options: [.mixWithOthers])
-            try session.setActive(true)
-            try engine.start()
-            isReady = true
-        } catch {
-            // Missing audio hardware or an interrupted session must never block gameplay.
-            isReady = false
-        }
+        engine.mainMixerNode.outputVolume = 1
+        player.volume = 1
+        restartIfPossible()
     }
 
     func play(_ event: GameSoundEvent, enabled: Bool) {
         guard enabled else { return }
-        if !isReady { restartIfPossible() }
+        if !isReady || !engine.isRunning { restartIfPossible() }
         guard isReady else { return }
 
         player.stop()
@@ -50,21 +43,27 @@ final class GameAudioManager: AudioManaging {
 
     private func restartIfPossible() {
         do {
-            try AVAudioSession.sharedInstance().setActive(true)
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try session.setActive(true)
+            engine.prepare()
             try engine.start()
             isReady = true
-        } catch { isReady = false }
+        } catch {
+            // Missing audio hardware or an interrupted session must never block gameplay.
+            isReady = false
+        }
     }
 
     private func tones(for event: GameSoundEvent) -> [(frequency: Double, duration: Double, volume: Float)] {
         switch event {
-        case .correct: [(660, 0.08, 0.25), (880, 0.13, 0.30)]
-        case .wrong: [(220, 0.14, 0.28), (165, 0.20, 0.24)]
-        case .passed: [(420, 0.07, 0.20), (330, 0.10, 0.18)]
-        case .hint: [(520, 0.06, 0.18), (700, 0.10, 0.22)]
-        case .streak: [(660, 0.07, 0.22), (830, 0.07, 0.25), (1_050, 0.18, 0.30)]
-        case .timeWarning: [(780, 0.08, 0.22), (780, 0.08, 0.22), (980, 0.12, 0.25)]
-        case .roundCompleted: [(523, 0.09, 0.22), (659, 0.09, 0.24), (784, 0.09, 0.26), (1_047, 0.25, 0.30)]
+        case .correct: [(660, 0.09, 0.46), (880, 0.16, 0.52)]
+        case .wrong: [(220, 0.16, 0.48), (165, 0.24, 0.42)]
+        case .passed: [(420, 0.09, 0.38), (330, 0.14, 0.34)]
+        case .hint: [(520, 0.08, 0.36), (700, 0.14, 0.42)]
+        case .streak: [(660, 0.08, 0.42), (830, 0.08, 0.47), (1_050, 0.22, 0.54)]
+        case .timeWarning: [(780, 0.10, 0.44), (780, 0.10, 0.44), (980, 0.16, 0.50)]
+        case .roundCompleted: [(523, 0.11, 0.42), (659, 0.11, 0.46), (784, 0.11, 0.50), (1_047, 0.30, 0.56)]
         }
     }
 

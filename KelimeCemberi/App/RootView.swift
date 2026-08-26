@@ -107,7 +107,9 @@ struct RootView: View {
                 flow = .languageLesson(language, level, questions)
             }
         case .languageLesson(let language, let level, let questions):
-            LanguageLessonView(language: language, level: level, sourceQuestions: questions, onExit: { flow = .levelSelection(language) })
+            LanguageLessonView(language: language, level: level, sourceQuestions: questions,
+                               soundEffectsEnabled: persistence.settings.soundEffectsEnabled,
+                               onExit: { flow = .levelSelection(language) })
         case .game(let request):
             GameScreen(request: request, questionTextScale: persistence.settings.questionTextScale, reduceMotionOverride: persistence.settings.reduceMotion, recentQuestionIDs: persistence.recentQuestionIDs(), soundEffectsEnabled: persistence.settings.soundEffectsEnabled, circleTheme: persistence.settings.selectedCircleTheme, onFinished: { session in
                 let earnedCoins = persistence.record(session: session, request: request)

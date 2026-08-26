@@ -71,6 +71,7 @@ struct LanguageLessonView: View {
     let language: LearningLanguage
     let level: CEFRLevel
     let sourceQuestions: [LanguageLearningQuestion]
+    var soundEffectsEnabled = true
     let onExit: () -> Void
     @State private var letters: [LanguageCircleItem] = []
     @State private var activeIndex: Int?
@@ -82,6 +83,8 @@ struct LanguageLessonView: View {
     @State private var remainingSeconds = 120
     @State private var isFinished = false
     @State private var preparationError: String?
+    @State private var didPlayTimeWarning = false
+    @State private var didPlayCompletionSound = false
     @State private var timerTask: Task<Void, Never>?
 
     private var activeItem: LanguageCircleItem? { activeIndex.flatMap { letters.indices.contains($0) ? letters[$0] : nil } }
@@ -172,6 +175,10 @@ struct LanguageLessonView: View {
             while !Task.isCancelled && remainingSeconds > 0 && !isFinished {
                 try? await Task.sleep(for: .seconds(1)); guard !Task.isCancelled else { return }
                 remainingSeconds -= 1
+                if remainingSeconds <= 10, remainingSeconds > 0, !didPlayTimeWarning {
+                    didPlayTimeWarning = true
+                    GameAudioManager.shared.play(.timeWarning, enabled: soundEffectsEnabled)
+                }
             }
             if remainingSeconds == 0 && !isFinished { finish() }
         }
@@ -183,6 +190,7 @@ struct LanguageLessonView: View {
         letters[index].status = correct ? .correct : .wrong
         if correct { correctCount += 1; streak += 1; score += 100 + max(0, streak - 1) * 15 }
         else { streak = 0 }
+        GameAudioManager.shared.play(correct && streak >= 3 ? .streak : correct ? .correct : .wrong, enabled: soundEffectsEnabled)
         feedback = LanguageFeedback(correct: correct, title: correct ? "DOĞRU!" : "YANLIŞ • \(question.answer)")
         answer = ""
         Task { @MainActor in
@@ -195,6 +203,7 @@ struct LanguageLessonView: View {
         letters[index].passCount += 1
         if letters[index].passCount >= 2 { letters[index].status = .wrong; streak = 0 }
         else { letters[index].status = .passed }
+        GameAudioManager.shared.play(.passed, enabled: soundEffectsEnabled)
         answer = ""; activateNext(after: index)
     }
 
@@ -211,6 +220,10 @@ struct LanguageLessonView: View {
     private func finish() {
         timerTask?.cancel(); activeIndex = nil; isFinished = true
         for index in letters.indices where [.waiting, .active, .passed].contains(letters[index].status) { letters[index].status = .wrong }
+        if !didPlayCompletionSound {
+            didPlayCompletionSound = true
+            GameAudioManager.shared.play(.roundCompleted, enabled: soundEffectsEnabled)
+        }
     }
 }
 
