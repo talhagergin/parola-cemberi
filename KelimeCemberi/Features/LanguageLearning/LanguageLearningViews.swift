@@ -144,15 +144,27 @@ struct LanguageLessonView: View {
     }
 
     private var resultOverlay: some View {
-        ZStack {
+        let passedItems = letters.filter { $0.status != .correct && $0.passCount > 0 }
+        let wrongItems = letters.filter { $0.status == .wrong && $0.passCount == 0 }
+        return ZStack {
             Color.black.opacity(0.78).ignoresSafeArea()
             GlassPanel {
-                VStack(spacing: 16) {
-                    Image(systemName: "trophy.fill").font(.system(size: 58)).foregroundStyle(.yellow)
-                    Text("ÇEMBER TAMAMLANDI").font(.title2.bold()).foregroundStyle(.white)
-                    Text("\(correctCount) doğru • \(score) puan").font(.headline).foregroundStyle(GameColors.cyan)
-                    Button("SEVİYELERE DÖN", action: onExit).buttonStyle(GameButtonStyle(kind: .primary))
-                }.padding(24)
+                ScrollView {
+                    VStack(spacing: 16) {
+                        Image(systemName: "trophy.fill").font(.system(size: 50)).foregroundStyle(.yellow)
+                        Text("ÇEMBER TAMAMLANDI").font(.title2.bold()).foregroundStyle(.white)
+                        Text("\(correctCount) doğru • \(passedItems.count) pas • \(wrongItems.count) yanlış/boş")
+                            .font(.headline).foregroundStyle(GameColors.cyan).multilineTextAlignment(.center)
+                        Text("\(score) puan").font(.title3.bold()).foregroundStyle(.white)
+                        if !passedItems.isEmpty {
+                            LanguageMistakeSection(title: "PAS GEÇİLENLER", icon: "arrow.right.circle.fill", color: GameColors.purple, items: passedItems)
+                        }
+                        if !wrongItems.isEmpty {
+                            LanguageMistakeSection(title: "YANLIŞ / BOŞ", icon: "xmark.circle.fill", color: GameColors.danger, items: wrongItems)
+                        }
+                        Button("SEVİYELERE DÖN", action: onExit).buttonStyle(GameButtonStyle(kind: .primary))
+                    }.padding(24)
+                }
             }.padding(28)
         }
     }
@@ -285,6 +297,33 @@ private struct LanguageCircleItem: Identifiable {
     var status: LanguageCircleStatus
     var passCount = 0
     var id: String { letter }
+}
+
+private struct LanguageMistakeSection: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let items: [LanguageCircleItem]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(title, systemImage: icon).font(.caption.bold()).foregroundStyle(color)
+            ForEach(items) { item in
+                if let question = item.question {
+                    HStack(alignment: .top, spacing: 10) {
+                        Text(item.letter).font(.headline.bold()).foregroundStyle(color).frame(width: 24)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(question.clue).font(.subheadline).foregroundStyle(.white)
+                            Text(question.answer).font(.caption.bold()).foregroundStyle(GameColors.cyan)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .padding(10)
+                    .background(GameColors.background.opacity(0.52), in: RoundedRectangle(cornerRadius: 12))
+                }
+            }
+        }.frame(maxWidth: .infinity, alignment: .leading)
+    }
 }
 
 private struct LanguageCircleWheel: View {

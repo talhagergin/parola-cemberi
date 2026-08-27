@@ -156,14 +156,20 @@ def ensure_alphabet_coverage(key, config, level, records):
     return records
 
 def main():
-    output_dir = Path(__file__).resolve().parents[1] / "KelimeCemberi" / "Resources" / "Questions" / "Languages"
+    project_root = Path(__file__).resolve().parents[1]
+    output_dir = project_root / "KelimeCemberi" / "Resources" / "Questions" / "Languages"
     output_dir.mkdir(parents=True, exist_ok=True)
     for key, config in PACKS.items():
         records = []
-        for level, entries in config["levels"].items():
-            level_records = [make_record(key, config, level, *entry) for entry in entries]
-            level_records.extend(make_record(key, config, level, *entry) for entry in EXTRA_PACKS[key][level])
-            records.extend(ensure_alphabet_coverage(key, config, level, level_records))
+        seed_path = project_root / "scripts" / "data" / "english_cefr_3000_seed.json"
+        if key == "english" and seed_path.exists():
+            seed = json.loads(seed_path.read_text(encoding="utf-8"))
+            records = [make_record(key, config, item["cefrLevel"], item["answer"], item["clue"], item["category"]) for item in seed]
+        else:
+            for level, entries in config["levels"].items():
+                level_records = [make_record(key, config, level, *entry) for entry in entries]
+                level_records.extend(make_record(key, config, level, *entry) for entry in EXTRA_PACKS[key][level])
+                records.extend(ensure_alphabet_coverage(key, config, level, level_records))
         path = output_dir / f"parola_cemberi_{key}_cefr.json"
         path.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"{path.name}: {len(records)} kayıt")

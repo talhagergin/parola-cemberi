@@ -38,6 +38,8 @@ struct MainMenuView: View {
                         Button("MAĞAZA", action: onStore).font(.caption.bold()).foregroundStyle(GameColors.cyan)
                     }.padding(.horizontal, 14).padding(.vertical, 10).background(GameColors.panel.opacity(0.85), in: Capsule())
 
+                    MenuMiniCard(icon: "character.book.closed.fill", title: "Dil Öğren", color: GameColors.success, badge: "3 Dil • A1–C2", action: onLanguageLearning)
+
                     GlassPanel {
                         VStack(spacing: GameSpacing.md) {
                             ZStack {
@@ -63,7 +65,6 @@ struct MainMenuView: View {
                     }
                     MenuMiniCard(icon: "gearshape.fill", title: "Ayarlar", color: GameColors.textSecondary, action: onSettings)
                     MenuMiniCard(icon: "bag.fill", title: "Avatar ve Tema Mağazası", color: GameColors.cyan, badge: "Jeton", action: onStore)
-                    MenuMiniCard(icon: "character.book.closed.fill", title: "Dil Öğren", color: GameColors.success, badge: "3 Dil", action: onLanguageLearning)
                     MenuMiniCard(icon: isPremium ? "checkmark.seal.fill" : "crown.fill", title: isPremium ? "Premium Aktif" : "Reklamları Kaldır", color: .yellow, badge: isPremium ? nil : "Premium", action: onPremium)
                     AdBannerSlot(isPremium: isPremium)
                 }.padding(GameSpacing.md)
