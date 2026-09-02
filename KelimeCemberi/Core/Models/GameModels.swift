@@ -37,6 +37,8 @@ struct GameConfiguration: Hashable, Sendable {
     let letters: [TurkishLetter]
     let durationSeconds: Int
     let maximumPassCount: Int
+    let maximumHintJokers: Int
+    let maximumSkipJokers: Int
 
     static let classic = GameConfiguration(
         letters: TurkishLetter.allCases,
@@ -44,12 +46,15 @@ struct GameConfiguration: Hashable, Sendable {
         maximumPassCount: 2
     )
 
-    init(letters: [TurkishLetter], durationSeconds: Int, maximumPassCount: Int) {
+    init(letters: [TurkishLetter], durationSeconds: Int, maximumPassCount: Int, maximumHintJokers: Int = 3, maximumSkipJokers: Int = 2) {
         precondition(durationSeconds > 0)
         precondition(maximumPassCount >= 0)
+        precondition(maximumHintJokers >= 0 && maximumSkipJokers >= 0)
         self.letters = letters
         self.durationSeconds = durationSeconds
         self.maximumPassCount = maximumPassCount
+        self.maximumHintJokers = maximumHintJokers
+        self.maximumSkipJokers = maximumSkipJokers
     }
 }
 
@@ -65,6 +70,7 @@ struct GameSession: Sendable {
     var streak: Int
     var longestStreak: Int
     var hintsUsed: Int
+    var skipsUsed: Int
     var startedAt: Date?
     var finishedAt: Date?
 
@@ -80,6 +86,7 @@ struct GameSession: Sendable {
         streak = 0
         longestStreak = 0
         hintsUsed = 0
+        skipsUsed = 0
         startedAt = nil
         finishedAt = nil
     }

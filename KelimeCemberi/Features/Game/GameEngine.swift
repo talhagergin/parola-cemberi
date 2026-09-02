@@ -6,6 +6,7 @@ enum GameEngineError: LocalizedError, Equatable {
     case noActiveQuestion
     case emptyAnswer
     case actionInProgress
+    case jokerExhausted
 
     var errorDescription: String? {
         switch self {
@@ -13,6 +14,7 @@ enum GameEngineError: LocalizedError, Equatable {
         case .noActiveQuestion: "Aktif bir soru bulunmuyor."
         case .emptyAnswer: "Lütfen bir cevap yazın."
         case .actionInProgress: "Önceki cevap işleniyor."
+        case .jokerExhausted: "Bu turdaki joker hakların tükendi."
         }
     }
 }
@@ -90,7 +92,11 @@ final class GameEngine {
         guard let index = session.currentIndex, session.letters[index].question != nil else {
             throw GameEngineError.noActiveQuestion
         }
+        guard session.skipsUsed < session.configuration.maximumSkipJokers else {
+            throw GameEngineError.jokerExhausted
+        }
 
+        session.skipsUsed += 1
         session.letters[index].passCount += 1
         session.letters[index].status = .passed
         if session.letters[index].passCount < session.configuration.maximumPassCount {
@@ -106,6 +112,9 @@ final class GameEngine {
             throw GameEngineError.noActiveQuestion
         }
         guard !session.letters[index].hintUsed else { return question.extendedClue }
+        guard session.hintsUsed < session.configuration.maximumHintJokers else {
+            throw GameEngineError.jokerExhausted
+        }
         session.letters[index].hintUsed = true
         session.hintsUsed += 1
         return question.extendedClue

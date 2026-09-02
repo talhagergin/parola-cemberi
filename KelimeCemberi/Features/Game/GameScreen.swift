@@ -96,10 +96,7 @@ struct GameScreen: View {
                             .frame(maxHeight: wheelHeight(for: proxy.size))
 
                             if let active = model.engine?.activeLetterState {
-                                GameQuestionCard(letterState: active, textScale: questionTextScale, onHint: {
-                                    model.useHint()
-                                    GameAudioManager.shared.play(.hint, enabled: soundEffectsEnabled)
-                                })
+                                GameQuestionCard(letterState: active, textScale: questionTextScale)
                                     .animation(reduceMotion || reduceMotionOverride ? nil : .spring(response: 0.4, dampingFraction: 0.82), value: active.question?.id)
                             }
                         }
@@ -129,43 +126,45 @@ struct GameScreen: View {
 
     private var answerControls: some View {
         VStack(spacing: GameSpacing.sm) {
-            HStack(spacing: GameSpacing.sm) {
-                Image(systemName: "character.cursor.ibeam").foregroundStyle(GameColors.cyan)
-                TextField("Cevabını yaz…", text: $model.answerText)
-                    .focused($isAnswerFocused)
-                    .textInputAutocapitalization(.characters)
-                    .autocorrectionDisabled()
-                    .submitLabel(.done)
-                    .onSubmit { Task { await model.submit() } }
-                    .foregroundStyle(.white)
-                    .accessibilityLabel("Cevap alanı")
-                if isAnswerFocused {
-                    Button { Task { await model.pass() } } label: {
-                        Text("PAS").font(.caption.bold()).foregroundStyle(GameColors.purple)
-                            .frame(width: 42, height: 38)
+            HStack(alignment: .center, spacing: 8) {
+                JokerButton(icon: "lightbulb.fill", title: "İPUCU", remaining: remainingHintJokers, color: .yellow, disabled: !canUseHint) {
+                    model.useHint()
+                    GameAudioManager.shared.play(.hint, enabled: soundEffectsEnabled)
+                }
+
+                HStack(spacing: 7) {
+                    Image(systemName: "character.cursor.ibeam").foregroundStyle(GameColors.cyan)
+                    TextField("Cevabını yaz…", text: $model.answerText)
+                        .focused($isAnswerFocused)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+                        .submitLabel(.done)
+                        .onSubmit { Task { await model.submit() } }
+                        .foregroundStyle(.white)
+                        .accessibilityLabel("Cevap alanı")
+                    if isAnswerFocused {
+                        Button { Task { await model.submit() } } label: {
+                            Image(systemName: "checkmark").font(.headline.bold()).foregroundStyle(.white)
+                                .frame(width: 38, height: 36)
+                                .background(GameColors.orange, in: RoundedRectangle(cornerRadius: 11))
+                        }
+                        .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.42)
+                        .accessibilityLabel("Cevapla")
                     }
-                    .accessibilityLabel("Pas geç")
-                    Button { Task { await model.submit() } } label: {
-                        Image(systemName: "checkmark").font(.headline.bold()).foregroundStyle(.white)
-                            .frame(width: 42, height: 38)
-                            .background(GameColors.orange, in: RoundedRectangle(cornerRadius: 11))
-                    }
-                    .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.42)
-                    .accessibilityLabel("Cevapla")
+                }
+                .padding(.horizontal, 10).frame(minHeight: 54)
+                .background(GameColors.background.opacity(0.78), in: RoundedRectangle(cornerRadius: GameCornerRadius.button))
+                .overlay { RoundedRectangle(cornerRadius: GameCornerRadius.button).stroke(GameColors.purple.opacity(0.55), lineWidth: 1.5) }
+
+                JokerButton(icon: "forward.fill", title: "ATLA", remaining: remainingSkipJokers, color: GameColors.purple, disabled: remainingSkipJokers == 0) {
+                    Task { await model.pass() }
                 }
             }
-            .padding(.horizontal, GameSpacing.md).frame(minHeight: 50)
-            .background(GameColors.background.opacity(0.78), in: RoundedRectangle(cornerRadius: GameCornerRadius.button))
-            .overlay { RoundedRectangle(cornerRadius: GameCornerRadius.button).stroke(GameColors.purple.opacity(0.55), lineWidth: 1.5) }
 
             if !isAnswerFocused {
-                HStack(spacing: GameSpacing.sm) {
-                    Button("PAS") { Task { await model.pass() } }
-                        .buttonStyle(GameButtonStyle(kind: .secondary))
-                    Button("CEVAPLA") { Task { await model.submit() } }
-                        .buttonStyle(GameButtonStyle(kind: .primary))
-                        .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.48)
-                }
+                Button("CEVAPLA") { Task { await model.submit() } }
+                    .buttonStyle(GameButtonStyle(kind: .primary))
+                    .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.48)
             }
         }
         .padding(.bottom, GameSpacing.sm)
@@ -175,6 +174,21 @@ struct GameScreen: View {
                 Button("Klavyeyi Kapat") { isAnswerFocused = false }
             }
         }
+    }
+
+    private var remainingHintJokers: Int {
+        guard let session = model.session else { return 0 }
+        return max(0, session.configuration.maximumHintJokers - session.hintsUsed)
+    }
+
+    private var remainingSkipJokers: Int {
+        guard let session = model.session else { return 0 }
+        return max(0, session.configuration.maximumSkipJokers - session.skipsUsed)
+    }
+
+    private var canUseHint: Bool {
+        guard let active = model.engine?.activeLetterState else { return false }
+        return remainingHintJokers > 0 && !active.hintUsed && active.question?.extendedClue != nil
     }
 
     private var pauseOverlay: some View {
@@ -209,5 +223,40 @@ struct GameScreen: View {
                 .background(data.2.opacity(0.94), in: Capsule()).shadow(color: data.2, radius: 18)
                 .transition(.scale.combined(with: .opacity)).zIndex(5)
         }
+    }
+}
+
+private struct JokerButton: View {
+    let icon: String
+    let title: String
+    let remaining: Int
+    let color: Color
+    let disabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 3) {
+                    Image(systemName: icon).font(.system(size: 19, weight: .bold))
+                    Text(title).font(.system(size: 8, weight: .heavy, design: .rounded))
+                }
+                .foregroundStyle(color)
+                .frame(width: 56, height: 54)
+                .background(GameColors.background.opacity(0.82), in: RoundedRectangle(cornerRadius: 15))
+                .overlay { RoundedRectangle(cornerRadius: 15).stroke(color.opacity(0.65), lineWidth: 1.5) }
+
+                Text("\(remaining)")
+                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .frame(width: 20, height: 20)
+                    .background(color, in: Circle())
+                    .offset(x: 5, y: -5)
+            }
+        }
+        .buttonStyle(.plain)
+        .disabled(disabled)
+        .opacity(disabled ? 0.38 : 1)
+        .accessibilityLabel("\(title), \(remaining) hak kaldı")
     }
 }

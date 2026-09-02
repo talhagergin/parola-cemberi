@@ -21,12 +21,15 @@ enum TestFixtures {
     static func engine(
         letters: [TurkishLetter] = [.a, .b, .c],
         duration: Int = 120,
-        maximumPassCount: Int = 2
+        maximumPassCount: Int = 2,
+        maximumHintJokers: Int = 3,
+        maximumSkipJokers: Int = 2
     ) -> GameEngine {
         let questions = Dictionary(uniqueKeysWithValues: letters.map { ($0, question(letter: $0)) })
         let session = GameSession(
             configuration: GameConfiguration(
-                letters: letters, durationSeconds: duration, maximumPassCount: maximumPassCount
+                letters: letters, durationSeconds: duration, maximumPassCount: maximumPassCount,
+                maximumHintJokers: maximumHintJokers, maximumSkipJokers: maximumSkipJokers
             ),
             questions: questions
         )

@@ -3,7 +3,6 @@ import SwiftUI
 struct GameQuestionCard: View {
     let letterState: LetterState
     var textScale: Double = 1
-    let onHint: () -> Void
 
     var body: some View {
         if let question = letterState.question {
@@ -29,13 +28,11 @@ struct GameQuestionCard: View {
                     HStack {
                         Text("\(question.letterCount) harf")
                             .font(.caption).foregroundStyle(GameColors.textSecondary)
-                        Spacer()
-                        Button(action: onHint) {
-                            Label(letterState.hintUsed ? "İpucu açık" : "İpucu", systemImage: "lightbulb.fill")
-                                .font(.caption.bold()).foregroundStyle(letterState.hintUsed ? GameColors.success : .yellow)
+                        if letterState.hintUsed {
+                            Spacer()
+                            Label("İpucu açık", systemImage: "lightbulb.fill")
+                                .font(.caption.bold()).foregroundStyle(GameColors.success)
                         }
-                        .disabled(letterState.hintUsed || question.extendedClue == nil)
-                        .accessibilityHint("Genişletilmiş ipucunu gösterir ve doğru cevap puanını azaltır")
                     }
                 }.padding(GameSpacing.md)
             }

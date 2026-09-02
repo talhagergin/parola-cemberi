@@ -78,6 +78,24 @@ final class GameEngineTests: XCTestCase {
         XCTAssertEqual(engine.session.hintsUsed, 1)
     }
 
+    func testJokerLimitsAreEnforcedAcrossRound() throws {
+        let hintEngine = TestFixtures.engine(letters: [.a, .b], maximumHintJokers: 1)
+        hintEngine.start()
+        _ = try hintEngine.useHint()
+        try hintEngine.pass()
+        XCTAssertThrowsError(try hintEngine.useHint()) { error in
+            XCTAssertEqual(error as? GameEngineError, .jokerExhausted)
+        }
+
+        let skipEngine = TestFixtures.engine(letters: [.a, .b, .c], maximumSkipJokers: 1)
+        skipEngine.start()
+        try skipEngine.pass()
+        XCTAssertThrowsError(try skipEngine.pass()) { error in
+            XCTAssertEqual(error as? GameEngineError, .jokerExhausted)
+        }
+        XCTAssertEqual(skipEngine.session.skipsUsed, 1)
+    }
+
     func testConcurrentSubmissionsAreRejected() async throws {
         let engine = TestFixtures.engine(letters: [.a, .b])
         engine.start()
