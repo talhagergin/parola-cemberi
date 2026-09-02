@@ -12,7 +12,7 @@ struct SplashView: View {
                     Circle().trim(from: 0, to: 0.72)
                         .stroke(GameColors.cyan, style: StrokeStyle(lineWidth: 7, lineCap: .round))
                         .rotationEffect(.degrees(rotate ? 270 : -90)).shadow(color: GameColors.cyan, radius: 16)
-                    Text("KÇ").font(.system(size: 55, weight: .heavy, design: .rounded)).foregroundStyle(.white)
+                    Text("PÇ").font(.system(size: 55, weight: .heavy, design: .rounded)).foregroundStyle(.white)
                 }.frame(width: 170, height: 170)
                 VStack(spacing: 0) {
                     Text("PAROLA").foregroundStyle(.white)
