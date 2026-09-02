@@ -65,13 +65,26 @@ final class PersistenceStoreTests: XCTestCase {
         XCTAssertEqual(store.settings.selectedCircleTheme, .sunset)
     }
 
-    func testInterstitialMilestoneOccursEveryThirdCompletedRound() throws {
+    func testNormalInterstitialMilestoneOccursEverySecondCompletedRound() throws {
         let store = try makeStore()
-        store.settings.completedRoundsSinceAd = 2
+        store.settings.completedRoundsSinceAd = 1
         store.settings.completedRoundsSinceAd += 1
         XCTAssertTrue(store.consumeInterstitialMilestone())
         XCTAssertEqual(store.settings.completedRoundsSinceAd, 0)
         XCTAssertFalse(store.consumeInterstitialMilestone())
+    }
+
+    func testLanguageInterstitialCadenceDependsOnLevel() throws {
+        let store = try makeStore()
+
+        XCTAssertFalse(store.registerLanguageRound(level: .a1))
+        XCTAssertFalse(store.registerLanguageRound(level: .a1))
+        XCTAssertTrue(store.registerLanguageRound(level: .a1))
+        XCTAssertEqual(store.settings.completedA1RoundsSinceAd, 0)
+
+        XCTAssertFalse(store.registerLanguageRound(level: .b1))
+        XCTAssertTrue(store.registerLanguageRound(level: .b1))
+        XCTAssertEqual(store.settings.completedOtherLanguageRoundsSinceAd, 0)
     }
 
     func testDailyStreakCountsTodayAndPreviousDays() throws {

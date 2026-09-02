@@ -9,7 +9,6 @@ enum AppFlow {
     case statistics
     case settings
     case avatarSelection
-    case premium
     case store
     case languageSelection
     case levelSelection(LearningLanguage)

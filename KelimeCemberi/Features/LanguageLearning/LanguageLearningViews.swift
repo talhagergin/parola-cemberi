@@ -72,6 +72,7 @@ struct LanguageLessonView: View {
     let level: CEFRLevel
     let sourceQuestions: [LanguageLearningQuestion]
     var soundEffectsEnabled = true
+    let onFinished: () -> Void
     let onExit: () -> Void
     @State private var letters: [LanguageCircleItem] = []
     @State private var activeIndex: Int?
@@ -85,6 +86,7 @@ struct LanguageLessonView: View {
     @State private var preparationError: String?
     @State private var didPlayTimeWarning = false
     @State private var didPlayCompletionSound = false
+    @State private var didReportCompletion = false
     @State private var timerTask: Task<Void, Never>?
 
     private var activeItem: LanguageCircleItem? { activeIndex.flatMap { letters.indices.contains($0) ? letters[$0] : nil } }
@@ -230,11 +232,16 @@ struct LanguageLessonView: View {
     }
 
     private func finish() {
+        guard !isFinished else { return }
         timerTask?.cancel(); activeIndex = nil; isFinished = true
         for index in letters.indices where [.waiting, .active, .passed].contains(letters[index].status) { letters[index].status = .wrong }
         if !didPlayCompletionSound {
             didPlayCompletionSound = true
             GameAudioManager.shared.play(.roundCompleted, enabled: soundEffectsEnabled)
+        }
+        if !didReportCompletion {
+            didReportCompletion = true
+            onFinished()
         }
     }
 }

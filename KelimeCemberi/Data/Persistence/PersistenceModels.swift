@@ -134,6 +134,8 @@ final class AppSettings {
     var selectedCircleThemeRawValue: String?
     var ownedCircleThemeRawValues: [String]?
     var completedRoundsSinceAdValue: Int?
+    var completedA1RoundsSinceAdValue: Int?
+    var completedOtherLanguageRoundsSinceAdValue: Int?
 
     init(settingsKey: String = "default") {
         self.settingsKey = settingsKey
@@ -150,6 +152,8 @@ final class AppSettings {
         selectedCircleThemeRawValue = CircleTheme.classic.rawValue
         ownedCircleThemeRawValues = [CircleTheme.classic.rawValue]
         completedRoundsSinceAdValue = 0
+        completedA1RoundsSinceAdValue = 0
+        completedOtherLanguageRoundsSinceAdValue = 0
     }
 
     var theme: AppThemePreference {
@@ -173,6 +177,14 @@ final class AppSettings {
     var completedRoundsSinceAd: Int {
         get { completedRoundsSinceAdValue ?? 0 }
         set { completedRoundsSinceAdValue = max(0, newValue) }
+    }
+    var completedA1RoundsSinceAd: Int {
+        get { completedA1RoundsSinceAdValue ?? 0 }
+        set { completedA1RoundsSinceAdValue = max(0, newValue) }
+    }
+    var completedOtherLanguageRoundsSinceAd: Int {
+        get { completedOtherLanguageRoundsSinceAdValue ?? 0 }
+        set { completedOtherLanguageRoundsSinceAdValue = max(0, newValue) }
     }
     func owns(_ avatar: PlayerAvatar) -> Bool { (ownedAvatarRawValues ?? [PlayerAvatar.robot.rawValue]).contains(avatar.rawValue) }
     func owns(_ theme: CircleTheme) -> Bool { (ownedCircleThemeRawValues ?? [CircleTheme.classic.rawValue]).contains(theme.rawValue) }

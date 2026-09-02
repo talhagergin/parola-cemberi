@@ -3,7 +3,6 @@ import SwiftUI
 struct RootView: View {
     @State private var model = AppViewModel()
     @State private var persistence: PersistenceStore
-    @State private var premium: PremiumStore
     @State private var flow: AppFlow = .splash
 
     init(persistence: PersistenceStore) {
@@ -12,7 +11,6 @@ struct RootView: View {
             persistence.saveSettings()
         }
         _persistence = State(initialValue: persistence)
-        _premium = State(initialValue: PremiumStore())
     }
 
     var body: some View {
@@ -30,7 +28,10 @@ struct RootView: View {
                 destination(report: report)
             }
         }
-        .task { await model.prepare() }
+        .task {
+            await model.prepare()
+            await AdService.shared.prepare()
+        }
         .animation(.easeInOut(duration: 0.28), value: routeAnimationKey)
     }
 
@@ -50,7 +51,6 @@ struct RootView: View {
                 questionCount: report.validQuestions.count,
                 dailyCompleted: persistence.isDailyCompleted(),
                 avatar: persistence.settings.selectedAvatar,
-                isPremium: premium.isPremium,
                 coinBalance: persistence.settings.coinBalance,
                 onPlay: { flow = .modeSelection },
                 onQuickPlay: { flow = .game(GameLaunchRequest(mode: .quick)) },
@@ -60,7 +60,6 @@ struct RootView: View {
                 onStatistics: { persistence.refresh(); flow = .statistics },
                 onSettings: { flow = .settings },
                 onAvatar: { flow = .avatarSelection },
-                onPremium: { flow = .premium },
                 onStore: { flow = .store },
                 onLanguageLearning: { flow = .languageSelection }
             )
@@ -91,8 +90,6 @@ struct RootView: View {
             )
         case .avatarSelection:
             AvatarPickerView(settings: persistence.settings, onSelect: persistence.select, onStore: { flow = .store }, onBack: { flow = .mainMenu })
-        case .premium:
-            PremiumView(store: premium, onBack: { flow = .mainMenu })
         case .store:
             GameStoreView(settings: persistence.settings,
                           buyAvatar: persistence.purchase,
@@ -109,14 +106,19 @@ struct RootView: View {
         case .languageLesson(let language, let level, let questions):
             LanguageLessonView(language: language, level: level, sourceQuestions: questions,
                                soundEffectsEnabled: persistence.settings.soundEffectsEnabled,
+                               onFinished: {
+                                   guard persistence.registerLanguageRound(level: level) else { return }
+                                   Task { @MainActor in
+                                       await AdService.shared.showInterstitial()
+                                   }
+                               },
                                onExit: { flow = .levelSelection(language) })
         case .game(let request):
             GameScreen(request: request, questionTextScale: persistence.settings.questionTextScale, reduceMotionOverride: persistence.settings.reduceMotion, recentQuestionIDs: persistence.recentQuestionIDs(), soundEffectsEnabled: persistence.settings.soundEffectsEnabled, circleTheme: persistence.settings.selectedCircleTheme, onFinished: { session in
                 let earnedCoins = persistence.record(session: session, request: request)
-                let shouldShowAd = !premium.isPremium && persistence.consumeInterstitialMilestone()
+                let shouldShowAd = persistence.consumeInterstitialMilestone()
                 Task { @MainActor in
                     if shouldShowAd {
-                        await AdService.shared.prepare()
                         await AdService.shared.showInterstitial()
                     }
                     flow = .results(session, request, earnedCoins)
@@ -135,7 +137,6 @@ struct RootView: View {
         case .modeSelection: "modes"; case .categorySelection: "categories"
         case .statistics: "statistics"; case .settings: "settings"
         case .avatarSelection: "avatar"
-        case .premium: "premium"
         case .store: "store"
         case .languageSelection: "languages"
         case .levelSelection: "levels"

@@ -22,6 +22,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>GADBannerAdUnitIdentifier</key>
+	<string>ca-app-pub-3940256099942544/2435281174</string>
+	<key>GADInterstitialAdUnitIdentifier</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.word-games</string>
 	<key>LSRequiresIPhoneOS</key>

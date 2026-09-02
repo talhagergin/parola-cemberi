@@ -128,10 +128,26 @@ final class PersistenceStore {
     func select(_ theme: CircleTheme) { guard settings.owns(theme) else { return }; settings.selectedCircleTheme = theme; saveSettings() }
 
     func consumeInterstitialMilestone() -> Bool {
-        guard settings.completedRoundsSinceAd >= 3 else { return false }
+        guard settings.completedRoundsSinceAd >= 2 else { return false }
         settings.completedRoundsSinceAd = 0
         saveSettings()
         return true
+    }
+
+    func registerLanguageRound(level: CEFRLevel) -> Bool {
+        if level == .a1 {
+            settings.completedA1RoundsSinceAd += 1
+            let shouldShowAd = settings.completedA1RoundsSinceAd >= 3
+            if shouldShowAd { settings.completedA1RoundsSinceAd = 0 }
+            saveSettings()
+            return shouldShowAd
+        }
+
+        settings.completedOtherLanguageRoundsSinceAd += 1
+        let shouldShowAd = settings.completedOtherLanguageRoundsSinceAd >= 2
+        if shouldShowAd { settings.completedOtherLanguageRoundsSinceAd = 0 }
+        saveSettings()
+        return shouldShowAd
     }
 
     func saveSettings() {

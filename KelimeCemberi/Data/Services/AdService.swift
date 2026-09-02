@@ -57,7 +57,7 @@ final class AdService: NSObject, FullScreenContentDelegate {
         isLoadingInterstitial = true
         defer { isLoadingInterstitial = false }
         do {
-            let ad = try await InterstitialAd.load(with: "ca-app-pub-3940256099942544/4411468910", request: Request())
+            let ad = try await InterstitialAd.load(with: AdUnitIDs.interstitial, request: Request())
             ad.fullScreenContentDelegate = self
             interstitial = ad
         } catch { interstitial = nil }
@@ -72,17 +72,15 @@ final class AdService: NSObject, FullScreenContentDelegate {
 }
 
 struct AdBannerSlot: View {
-    let isPremium: Bool
     @State private var isReady = false
 
     var body: some View {
         Group {
-            if !isPremium, isReady {
+            if isReady {
                 AdMobBannerView().frame(height: 60).accessibilityLabel("Reklam")
             }
         }
         .task {
-            guard !isPremium else { return }
             await AdService.shared.prepare()
             isReady = AdService.shared.canRequestAds
         }
@@ -92,7 +90,7 @@ struct AdBannerSlot: View {
 private struct AdMobBannerView: UIViewRepresentable {
     func makeUIView(context: Context) -> BannerView {
         let banner = BannerView(adSize: largeAnchoredAdaptiveBanner(width: UIScreen.main.bounds.width - 32))
-        banner.adUnitID = "ca-app-pub-3940256099942544/2435281174"
+        banner.adUnitID = AdUnitIDs.banner
         banner.rootViewController = UIApplication.shared.connectedScenes.compactMap { ($0 as? UIWindowScene)?.keyWindow?.rootViewController }.first
         banner.load(Request())
         return banner
@@ -101,12 +99,18 @@ private struct AdMobBannerView: UIViewRepresentable {
     func updateUIView(_ uiView: BannerView, context: Context) {}
 }
 
+private enum AdUnitIDs {
+    static let interstitial = Bundle.main.object(forInfoDictionaryKey: "GADInterstitialAdUnitIdentifier") as? String
+        ?? "ca-app-pub-3940256099942544/4411468910"
+    static let banner = Bundle.main.object(forInfoDictionaryKey: "GADBannerAdUnitIdentifier") as? String
+        ?? "ca-app-pub-3940256099942544/2435281174"
+}
+
 private extension UIWindowScene {
     var keyWindow: UIWindow? { windows.first(where: \.isKeyWindow) }
 }
 #else
 struct AdBannerSlot: View {
-    let isPremium: Bool
     var body: some View { EmptyView() }
 }
 #endif

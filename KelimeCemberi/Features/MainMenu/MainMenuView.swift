@@ -4,7 +4,6 @@ struct MainMenuView: View {
     let questionCount: Int
     let dailyCompleted: Bool
     let avatar: PlayerAvatar
-    let isPremium: Bool
     let coinBalance: Int
     let onPlay: () -> Void
     let onQuickPlay: () -> Void
@@ -12,7 +11,6 @@ struct MainMenuView: View {
     let onStatistics: () -> Void
     let onSettings: () -> Void
     let onAvatar: () -> Void
-    let onPremium: () -> Void
     let onStore: () -> Void
     let onLanguageLearning: () -> Void
 
@@ -65,8 +63,7 @@ struct MainMenuView: View {
                     }
                     MenuMiniCard(icon: "gearshape.fill", title: "Ayarlar", color: GameColors.textSecondary, action: onSettings)
                     MenuMiniCard(icon: "bag.fill", title: "Avatar ve Tema Mağazası", color: GameColors.cyan, badge: "Jeton", action: onStore)
-                    MenuMiniCard(icon: isPremium ? "checkmark.seal.fill" : "crown.fill", title: isPremium ? "Premium Aktif" : "Reklamları Kaldır", color: .yellow, badge: isPremium ? nil : "Premium", action: onPremium)
-                    AdBannerSlot(isPremium: isPremium)
+                    AdBannerSlot()
                 }.padding(GameSpacing.md)
             }
         }.preferredColorScheme(.dark)
