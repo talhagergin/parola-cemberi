@@ -14,6 +14,7 @@ struct GameScreen: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var didPlayTimeWarning = false
+    @FocusState private var isAnswerFocused: Bool
 
     init(request: GameLaunchRequest, questionTextScale: Double = 1, reduceMotionOverride: Bool = false, recentQuestionIDs: Set<UUID> = [], soundEffectsEnabled: Bool = true, circleTheme: CircleTheme = .classic, onFinished: @escaping (GameSession) -> Void, onExit: @escaping () -> Void) {
         self.request = request
@@ -92,7 +93,7 @@ struct GameScreen: View {
                                 streak: session.streak,
                                 theme: circleTheme
                             )
-                            .frame(maxHeight: min(proxy.size.width - 20, proxy.size.height * 0.49))
+                            .frame(maxHeight: wheelHeight(for: proxy.size))
 
                             if let active = model.engine?.activeLetterState {
                                 GameQuestionCard(letterState: active, textScale: questionTextScale, onHint: {
@@ -101,7 +102,6 @@ struct GameScreen: View {
                                 })
                                     .animation(reduceMotion || reduceMotionOverride ? nil : .spring(response: 0.4, dampingFraction: 0.82), value: active.question?.id)
                             }
-                            answerControls
                         }
                         .padding(.horizontal, GameSpacing.md)
                         .padding(.vertical, GameSpacing.sm)
@@ -109,8 +109,22 @@ struct GameScreen: View {
                     }
                     .scrollDismissesKeyboard(.interactively)
                 }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    answerControls
+                        .padding(.horizontal, GameSpacing.md)
+                        .padding(.top, GameSpacing.sm)
+                        .background(.ultraThinMaterial)
+                }
+                .animation(.easeInOut(duration: 0.22), value: isAnswerFocused)
             }
         }
+    }
+
+    private func wheelHeight(for size: CGSize) -> CGFloat {
+        if isAnswerFocused {
+            return min(size.width * 0.68, max(210, size.height * 0.34))
+        }
+        return min(size.width - 20, size.height * 0.49)
     }
 
     private var answerControls: some View {
@@ -118,25 +132,49 @@ struct GameScreen: View {
             HStack(spacing: GameSpacing.sm) {
                 Image(systemName: "character.cursor.ibeam").foregroundStyle(GameColors.cyan)
                 TextField("Cevabını yaz…", text: $model.answerText)
+                    .focused($isAnswerFocused)
                     .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
                     .submitLabel(.done)
                     .onSubmit { Task { await model.submit() } }
                     .foregroundStyle(.white)
                     .accessibilityLabel("Cevap alanı")
+                if isAnswerFocused {
+                    Button { Task { await model.pass() } } label: {
+                        Text("PAS").font(.caption.bold()).foregroundStyle(GameColors.purple)
+                            .frame(width: 42, height: 38)
+                    }
+                    .accessibilityLabel("Pas geç")
+                    Button { Task { await model.submit() } } label: {
+                        Image(systemName: "checkmark").font(.headline.bold()).foregroundStyle(.white)
+                            .frame(width: 42, height: 38)
+                            .background(GameColors.orange, in: RoundedRectangle(cornerRadius: 11))
+                    }
+                    .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.42)
+                    .accessibilityLabel("Cevapla")
+                }
             }
             .padding(.horizontal, GameSpacing.md).frame(minHeight: 50)
             .background(GameColors.background.opacity(0.78), in: RoundedRectangle(cornerRadius: GameCornerRadius.button))
             .overlay { RoundedRectangle(cornerRadius: GameCornerRadius.button).stroke(GameColors.purple.opacity(0.55), lineWidth: 1.5) }
 
-            HStack(spacing: GameSpacing.sm) {
-                Button("PAS") { Task { await model.pass() } }
-                    .buttonStyle(GameButtonStyle(kind: .secondary))
-                Button("CEVAPLA") { Task { await model.submit() } }
-                    .buttonStyle(GameButtonStyle(kind: .primary))
-                    .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.48)
+            if !isAnswerFocused {
+                HStack(spacing: GameSpacing.sm) {
+                    Button("PAS") { Task { await model.pass() } }
+                        .buttonStyle(GameButtonStyle(kind: .secondary))
+                    Button("CEVAPLA") { Task { await model.submit() } }
+                        .buttonStyle(GameButtonStyle(kind: .primary))
+                        .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.48)
+                }
             }
-        }.padding(.bottom, GameSpacing.sm)
+        }
+        .padding(.bottom, GameSpacing.sm)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Klavyeyi Kapat") { isAnswerFocused = false }
+            }
+        }
     }
 
     private var pauseOverlay: some View {
