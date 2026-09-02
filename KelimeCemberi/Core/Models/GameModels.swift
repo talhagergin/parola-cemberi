@@ -1,7 +1,7 @@
 import Foundation
 
 enum LetterStatus: String, Codable, Sendable {
-    case waiting, active, correct, wrong, passed, unavailable
+    case waiting, active, correct, wrong, passed, skipped, unavailable
 }
 
 enum GamePhase: String, Codable, Sendable {

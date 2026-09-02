@@ -240,7 +240,7 @@ final class PersistenceStore {
         switch status {
         case .correct: attempts += 1; correct += 1
         case .wrong: attempts += 1; wrong += 1
-        case .passed: attempts += 1; passed += 1
+        case .passed, .skipped: attempts += 1; passed += 1
         case .waiting, .active, .unavailable: break
         }
     }

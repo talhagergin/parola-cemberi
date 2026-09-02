@@ -14,6 +14,7 @@ extension LetterStatus {
         case .correct: "doğru cevaplandı"
         case .wrong: "yanlış cevaplandı"
         case .passed: "pas geçildi"
+        case .skipped: "jokerle atlandı"
         case .unavailable: "soru bulunamadı"
         }
     }

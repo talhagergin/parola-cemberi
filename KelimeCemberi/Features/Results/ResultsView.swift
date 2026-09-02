@@ -11,11 +11,12 @@ struct ResultsView: View {
     private var correct: Int { session.letters.filter { $0.status == .correct }.count }
     private var wrong: Int { session.letters.filter { $0.status == .wrong }.count }
     private var passed: Int { session.letters.filter { $0.status == .passed }.count }
+    private var skipped: Int { session.letters.filter { $0.status == .skipped }.count }
     private var accuracy: Int {
         let answered = correct + wrong
         return answered == 0 ? 0 : Int((Double(correct) / Double(answered) * 100).rounded())
     }
-    private var reviewItems: [LetterState] { session.letters.filter { $0.status == .wrong || $0.status == .passed } }
+    private var reviewItems: [LetterState] { session.letters.filter { $0.status == .wrong || $0.status == .passed || $0.status == .skipped } }
 
     var body: some View {
         ZStack {
@@ -40,6 +41,7 @@ struct ResultsView: View {
                         ResultStat(icon: "checkmark.circle.fill", value: "\(correct)", label: "Doğru", color: GameColors.success)
                         ResultStat(icon: "xmark.circle.fill", value: "\(wrong)", label: "Yanlış", color: GameColors.danger)
                         ResultStat(icon: "arrow.right.circle.fill", value: "\(passed)", label: "Pas", color: GameColors.purple)
+                        ResultStat(icon: "forward.end.circle.fill", value: "\(skipped)", label: "Atlandı", color: GameColors.purple)
                         ResultStat(icon: "scope", value: "%\(accuracy)", label: "Doğruluk", color: GameColors.cyan)
                         ResultStat(icon: "flame.fill", value: "\(session.longestStreak)", label: "En uzun seri", color: GameColors.orange)
                         ResultStat(icon: "lightbulb.fill", value: "\(session.hintsUsed)", label: "İpucu", color: .yellow)

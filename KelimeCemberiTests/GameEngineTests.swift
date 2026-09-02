@@ -89,11 +89,21 @@ final class GameEngineTests: XCTestCase {
 
         let skipEngine = TestFixtures.engine(letters: [.a, .b, .c], maximumSkipJokers: 1)
         skipEngine.start()
-        try skipEngine.pass()
-        XCTAssertThrowsError(try skipEngine.pass()) { error in
+        try skipEngine.skip()
+        XCTAssertEqual(skipEngine.session.letters[0].status, .skipped)
+        XCTAssertEqual(skipEngine.activeLetterState?.letter, .b)
+        XCTAssertThrowsError(try skipEngine.skip()) { error in
             XCTAssertEqual(error as? GameEngineError, .jokerExhausted)
         }
         XCTAssertEqual(skipEngine.session.skipsUsed, 1)
+    }
+
+    func testPassReturnsLaterWithoutConsumingSkipJoker() throws {
+        let engine = TestFixtures.engine(letters: [.a, .b], maximumSkipJokers: 1)
+        engine.start()
+        try engine.pass()
+        XCTAssertEqual(engine.activeLetterState?.letter, .b)
+        XCTAssertEqual(engine.session.skipsUsed, 0)
     }
 
     func testConcurrentSubmissionsAreRejected() async throws {

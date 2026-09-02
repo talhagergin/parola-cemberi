@@ -56,6 +56,7 @@ struct GameScreen: View {
             case .correct: (model.session?.streak ?? 0) >= 3 ? .streak : .correct
             case .wrong: .wrong
             case .passed: .passed
+            case .skipped: .passed
             }
             GameAudioManager.shared.play(event, enabled: soundEffectsEnabled)
         }
@@ -157,13 +158,15 @@ struct GameScreen: View {
                 .overlay { RoundedRectangle(cornerRadius: GameCornerRadius.button).stroke(GameColors.purple.opacity(0.55), lineWidth: 1.5) }
 
                 JokerButton(icon: "forward.fill", title: "ATLA", remaining: remainingSkipJokers, color: GameColors.purple, disabled: remainingSkipJokers == 0) {
-                    Task { await model.pass() }
+                    Task { await model.skip() }
                 }
             }
 
-            if !isAnswerFocused {
+            HStack(spacing: GameSpacing.sm) {
+                Button("PAS") { Task { await model.pass() } }
+                    .buttonStyle(GameButtonStyle(kind: isAnswerFocused ? .compact : .secondary))
                 Button("CEVAPLA") { Task { await model.submit() } }
-                    .buttonStyle(GameButtonStyle(kind: .primary))
+                    .buttonStyle(GameButtonStyle(kind: isAnswerFocused ? .compact : .primary))
                     .disabled(!model.canSubmit).opacity(model.canSubmit ? 1 : 0.48)
             }
         }
@@ -216,6 +219,7 @@ struct GameScreen: View {
             case .correct: ("checkmark.circle.fill", "DOĞRU!", GameColors.success)
             case .wrong: ("xmark.circle.fill", "YANLIŞ", GameColors.danger)
             case .passed: ("arrow.right.circle.fill", "PAS", GameColors.purple)
+            case .skipped: ("forward.end.circle.fill", "ATLANDI", GameColors.purple)
             }
             Label(data.1, systemImage: data.0)
                 .font(.system(.title2, design: .rounded, weight: .heavy)).foregroundStyle(.white)

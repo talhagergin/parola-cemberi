@@ -5,7 +5,7 @@ import Observation
 @Observable
 final class GameScreenViewModel {
     enum LoadState: Equatable { case loading, ready, failed(String) }
-    enum Feedback: Equatable { case correct, wrong, passed }
+    enum Feedback: Equatable { case correct, wrong, passed, skipped }
 
     private(set) var loadState: LoadState = .loading
     private(set) var engine: GameEngine?
@@ -90,6 +90,16 @@ final class GameScreenViewModel {
             try engine.pass()
             answerText = ""
             showFeedback(.passed)
+            await stopTimerIfFinished()
+        } catch { loadState = .failed(error.localizedDescription) }
+    }
+
+    func skip() async {
+        guard let engine else { return }
+        do {
+            try engine.skip()
+            answerText = ""
+            showFeedback(.skipped)
             await stopTimerIfFinished()
         } catch { loadState = .failed(error.localizedDescription) }
     }

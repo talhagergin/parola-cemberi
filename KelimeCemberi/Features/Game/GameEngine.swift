@@ -92,16 +92,26 @@ final class GameEngine {
         guard let index = session.currentIndex, session.letters[index].question != nil else {
             throw GameEngineError.noActiveQuestion
         }
-        guard session.skipsUsed < session.configuration.maximumSkipJokers else {
-            throw GameEngineError.jokerExhausted
-        }
-
-        session.skipsUsed += 1
         session.letters[index].passCount += 1
         session.letters[index].status = .passed
         if session.letters[index].passCount < session.configuration.maximumPassCount {
             revisitQueue.append(index)
         }
+        moveToNextQuestion()
+    }
+
+    func skip() throws {
+        guard session.phase == .running else { throw GameEngineError.invalidPhase }
+        guard !isProcessingAction else { throw GameEngineError.actionInProgress }
+        guard let index = session.currentIndex, session.letters[index].question != nil else {
+            throw GameEngineError.noActiveQuestion
+        }
+        guard session.skipsUsed < session.configuration.maximumSkipJokers else {
+            throw GameEngineError.jokerExhausted
+        }
+
+        session.skipsUsed += 1
+        session.letters[index].status = .skipped
         moveToNextQuestion()
     }
 

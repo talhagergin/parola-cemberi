@@ -85,6 +85,7 @@ private struct LetterTile: View {
         case .correct: [Color(red: 0.42, green: 0.91, blue: 0.25), Color(red: 0.08, green: 0.48, blue: 0.15)]
         case .wrong: [Color(red: 1, green: 0.34, blue: 0.40), Color(red: 0.60, green: 0.05, blue: 0.13)]
         case .passed: [GameColors.muted, Color(red: 0.07, green: 0.08, blue: 0.20)]
+        case .skipped: [GameColors.purple, Color(red: 0.07, green: 0.08, blue: 0.20)]
         case .unavailable: [GameColors.muted.opacity(0.5), GameColors.background]
         }
         return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
