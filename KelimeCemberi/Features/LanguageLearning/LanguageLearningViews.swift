@@ -273,6 +273,12 @@ struct LanguageFlagView: View {
                         Color(red: 0.86, green: 0.0, blue: 0.08)
                         Color(red: 1.0, green: 0.80, blue: 0.0)
                     }
+                case .dutch:
+                    VStack(spacing: 0) {
+                        Color(red: 0.68, green: 0.08, blue: 0.12)
+                        Color.white
+                        Color(red: 0.08, green: 0.20, blue: 0.48)
+                    }
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: max(3, proxy.size.height * 0.14)))

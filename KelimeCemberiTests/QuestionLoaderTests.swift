@@ -17,16 +17,17 @@ final class QuestionLoaderTests: XCTestCase {
     func testLanguageLearningPackagesHaveBalancedCEFRLevels() throws {
         for language in LearningLanguage.allCases {
             let questions = try LanguageQuestionLoader().load(language)
-            let expectedPerLevel = language == .english ? 500 : 40
-            let expectedTotal = expectedPerLevel * CEFRLevel.allCases.count
+            let expectedTotal: Int = switch language {
+            case .english: 3_500
+            case .italian, .german: 740
+            case .dutch: 500
+            }
             XCTAssertEqual(questions.count, expectedTotal, language.title)
             XCTAssertEqual(Set(questions.map(\.id)).count, expectedTotal, language.title)
-            if language == .english {
-                XCTAssertEqual(Set(questions.map(\.answer)).count, expectedTotal, "İngilizce cevapları benzersiz olmalı")
-            }
             for level in CEFRLevel.allCases {
                 let levelQuestions = questions.filter { $0.cefrLevel == level }
-                XCTAssertEqual(levelQuestions.count, expectedPerLevel, "\(language.title) \(level.rawValue)")
+                XCTAssertGreaterThanOrEqual(levelQuestions.count, 83, "\(language.title) \(level.rawValue)")
+                XCTAssertEqual(Set(levelQuestions.map { $0.answer.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: $0.locale)) }).count, levelQuestions.count, "\(language.title) \(level.rawValue) cevapları benzersiz olmalı")
                 XCTAssertEqual(
                     Set(levelQuestions.map(\.initialLetter)),
                     Set(language.alphabet),

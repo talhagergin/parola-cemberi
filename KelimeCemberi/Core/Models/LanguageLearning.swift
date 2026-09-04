@@ -1,16 +1,17 @@
 import Foundation
 
 enum LearningLanguage: String, CaseIterable, Identifiable, Codable, Sendable {
-    case english, italian, german
+    case english, italian, german, dutch
     var id: String { rawValue }
-    var title: String { switch self { case .english: "İngilizce"; case .italian: "İtalyanca"; case .german: "Almanca" } }
-    var nativeTitle: String { switch self { case .english: "English"; case .italian: "Italiano"; case .german: "Deutsch" } }
+    var title: String { switch self { case .english: "İngilizce"; case .italian: "İtalyanca"; case .german: "Almanca"; case .dutch: "Felemenkçe" } }
+    var nativeTitle: String { switch self { case .english: "English"; case .italian: "Italiano"; case .german: "Deutsch"; case .dutch: "Nederlands" } }
     var resourceName: String { "parola_cemberi_\(rawValue)_cefr" }
     var alphabet: [String] {
         switch self {
         case .english: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".map(String.init)
         case .italian: "ABCDEFGHILMNOPQRSTUVZ".map(String.init)
         case .german: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ".map(String.init)
+        case .dutch: "ABCDEFGHIJKLMNOPRSTUVWZ".map(String.init)
         }
     }
 }

@@ -36,7 +36,7 @@ struct MainMenuView: View {
                         Button("MAĞAZA", action: onStore).font(.caption.bold()).foregroundStyle(GameColors.cyan)
                     }.padding(.horizontal, 14).padding(.vertical, 10).background(GameColors.panel.opacity(0.85), in: Capsule())
 
-                    MenuMiniCard(icon: "character.book.closed.fill", title: "Dil Öğren", color: GameColors.success, badge: "3 Dil • A1–C2", action: onLanguageLearning)
+                    MenuMiniCard(icon: "character.book.closed.fill", title: "Dil Öğren", color: GameColors.success, badge: "4 Dil • A1–C2", action: onLanguageLearning)
 
                     GlassPanel {
                         VStack(spacing: GameSpacing.md) {

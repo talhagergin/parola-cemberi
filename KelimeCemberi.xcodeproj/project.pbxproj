@@ -68,6 +68,7 @@
 		B00100000000000000000063 = {isa = PBXBuildFile; fileRef = F00100000000000000000063; };
 		B00100000000000000000064 = {isa = PBXBuildFile; fileRef = F00100000000000000000064; };
 		B00100000000000000000065 = {isa = PBXBuildFile; fileRef = F00100000000000000000065; };
+		B00100000000000000000066 = {isa = PBXBuildFile; fileRef = F00100000000000000000066; };
 		B00200000000000000000001 = {isa = PBXBuildFile; productRef = SPP000000000000000000002; };
 /* End PBXBuildFile section */
 
@@ -141,6 +142,7 @@
 		F00100000000000000000063 = {isa = PBXFileReference; lastKnownFileType = text.json; path = KelimeCemberi/Resources/Questions/Languages/parola_cemberi_english_cefr.json; sourceTree = SOURCE_ROOT; };
 		F00100000000000000000064 = {isa = PBXFileReference; lastKnownFileType = text.json; path = KelimeCemberi/Resources/Questions/Languages/parola_cemberi_italian_cefr.json; sourceTree = SOURCE_ROOT; };
 		F00100000000000000000065 = {isa = PBXFileReference; lastKnownFileType = text.json; path = KelimeCemberi/Resources/Questions/Languages/parola_cemberi_german_cefr.json; sourceTree = SOURCE_ROOT; };
+		F00100000000000000000066 = {isa = PBXFileReference; lastKnownFileType = text.json; path = KelimeCemberi/Resources/Questions/Languages/parola_cemberi_dutch_cefr.json; sourceTree = SOURCE_ROOT; };
 		B00100000000000000000058 = {isa = PBXBuildFile; fileRef = F00100000000000000000058; };
 /* End PBXFileReference section */
 
@@ -166,7 +168,7 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		P00000000000000000000005 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B00100000000000000000010,B00100000000000000000011,B00100000000000000000015,B00100000000000000000017,B00100000000000000000063,B00100000000000000000064,B00100000000000000000065); runOnlyForDeploymentPostprocessing = 0; };
+		P00000000000000000000005 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B00100000000000000000010,B00100000000000000000011,B00100000000000000000015,B00100000000000000000017,B00100000000000000000063,B00100000000000000000064,B00100000000000000000065,B00100000000000000000066); runOnlyForDeploymentPostprocessing = 0; };
 		P00000000000000000000006 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B00100000000000000000014,B00100000000000000000016); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 

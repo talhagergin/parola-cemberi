@@ -1,6 +1,17 @@
 # Parola Çemberi dil öğrenme paketleri
 
-Bu klasördeki paketlerde soru Türkçe, cevap hedef dildedir. Her dil dosyası A1, A2, B1, B2, C1 ve C2 seviyelerini içerir. Her seviyede 40, her dilde toplam 240 soru vardır.
+Bu klasördeki paketlerde soru Türkçe, cevap hedef dildedir. İngilizce, İtalyanca, Almanca ve Felemenkçe paketlerinin tamamı A1, A2, B1, B2, C1 ve C2 seviyelerini içerir.
+
+Paket büyüklükleri: İngilizce 3.500, İtalyanca 740, Almanca 740 ve Felemenkçe 500 sorudur. Seviye ve sıklık verileri Kelly/WordHoard; sözlük eşleştirmeleri FreeDict kaynakları temel alınarak hazırlanmıştır. Paketler benzersiz kimlik, benzersiz cevap, cevap uzunluğu ve her seviyede çember harfi kapsaması kontrollerinden geçirilir.
+
+Veri kaynakları ve lisansları:
+
+- Kelly Frequency Lists: University of Leeds ve University of Gothenburg kaynaklı CEFR/sıklık verisi; yeniden dağıtım bilgileri kaynak deposundadır: https://github.com/kotoshu/frequency-list-kelly
+- WordHoard: MIT lisanslı sıklık ve CEFR tahminleri: https://github.com/natema/wordhoard
+- FreeDict: açık kaynak iki dilli sözlük verileri: https://freedict.org/
+- MyMemory: yeni kayıtların Türkçe karşılıklarını çapraz kontrol etmek için kullanılmıştır: https://mymemory.translated.net/
+
+Otomatik sözlük ve çeviri eşleştirmeleri yayın öncesinde ana dili hedef dil olan bir editör tarafından örneklem denetiminden geçirilmelidir.
 
 Ek alanlar:
 
