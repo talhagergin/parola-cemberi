@@ -9,6 +9,13 @@ enum TurkishLetter: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
+    // Retain Ğ for decoding previously saved results, but never create a new tile for it.
+    static let allCases: [TurkishLetter] = [
+        .a, .b, .c, .cCedilla, .d, .e, .f, .g, .h, .iDotless, .iDotted,
+        .j, .k, .l, .m, .n, .o, .oUmlaut, .p, .r, .s, .sCedilla,
+        .t, .u, .uUmlaut, .v, .y, .z
+    ]
+
     static func initialLetter(in text: String) -> TurkishLetter? {
         let uppercase = text.trimmingCharacters(in: .whitespacesAndNewlines)
             .uppercased(with: Locale(identifier: "tr_TR"))

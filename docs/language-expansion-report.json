@@ -1,0 +1,222 @@
+{
+  "baselineRevision": "060052e",
+  "requestedAdditionalPerLevel": 1000,
+  "frequencyEstimatesUsed": false,
+  "quantityTargetsMet": false,
+  "languages": {
+    "english": {
+      "total": 3612,
+      "added": {
+        "A1": 57,
+        "A2": 35,
+        "B1": 20
+      },
+      "perLevel": {
+        "A1": 641,
+        "A2": 619,
+        "B1": 603,
+        "B2": 583,
+        "C1": 583,
+        "C2": 583
+      },
+      "targetPerLevel": {
+        "A1": 1584,
+        "A2": 1584,
+        "B1": 1583,
+        "B2": 1583,
+        "C1": 1583,
+        "C2": 1583
+      },
+      "shortfallPerLevel": {
+        "A1": 943,
+        "A2": 965,
+        "B1": 980,
+        "B2": 1000,
+        "C1": 1000,
+        "C2": 1000
+      },
+      "usableDictionaryLemmas": 17825,
+      "dictionarySHA256": "59ec70af066ac65bed0a188fd7161c4c48e3068208d02fdcbda86aa6cad4f708",
+      "pendingReviewCount": 1311,
+      "cefrSource": "Kelly + editorial cross-check; other candidates quarantined"
+    },
+    "italian": {
+      "total": 874,
+      "added": {
+        "A1": 70,
+        "A2": 47,
+        "B1": 17
+      },
+      "perLevel": {
+        "A1": 194,
+        "A2": 171,
+        "B1": 140,
+        "B2": 123,
+        "C1": 123,
+        "C2": 123
+      },
+      "targetPerLevel": {
+        "A1": 1124,
+        "A2": 1124,
+        "B1": 1123,
+        "B2": 1123,
+        "C1": 1123,
+        "C2": 1123
+      },
+      "shortfallPerLevel": {
+        "A1": 930,
+        "A2": 953,
+        "B1": 983,
+        "B2": 1000,
+        "C1": 1000,
+        "C2": 1000
+      },
+      "usableDictionaryLemmas": 9687,
+      "dictionarySHA256": "27a13ab03a9f3160588598053f4c2bd1222af124d43ed11c8f7e07a1e585cf6a",
+      "pendingReviewCount": 813,
+      "cefrSource": "Kelly + editorial cross-check; other candidates quarantined"
+    },
+    "german": {
+      "total": 740,
+      "added": {},
+      "perLevel": {
+        "A1": 124,
+        "A2": 124,
+        "B1": 123,
+        "B2": 123,
+        "C1": 123,
+        "C2": 123
+      },
+      "targetPerLevel": {
+        "A1": 1124,
+        "A2": 1124,
+        "B1": 1123,
+        "B2": 1123,
+        "C1": 1123,
+        "C2": 1123
+      },
+      "shortfallPerLevel": {
+        "A1": 1000,
+        "A2": 1000,
+        "B1": 1000,
+        "B2": 1000,
+        "C1": 1000,
+        "C2": 1000
+      },
+      "usableDictionaryLemmas": 7916,
+      "dictionarySHA256": "07922e2e8fa96bd3a6a8b7531c31a8940b9df6c91f51b533af12d7a0bfe669f8",
+      "pendingReviewCount": 0,
+      "cefrSource": "no new CEFR source; original levels retained"
+    },
+    "dutch": {
+      "total": 500,
+      "added": {},
+      "perLevel": {
+        "A1": 84,
+        "A2": 84,
+        "B1": 83,
+        "B2": 83,
+        "C1": 83,
+        "C2": 83
+      },
+      "targetPerLevel": {
+        "A1": 1084,
+        "A2": 1084,
+        "B1": 1083,
+        "B2": 1083,
+        "C1": 1083,
+        "C2": 1083
+      },
+      "shortfallPerLevel": {
+        "A1": 1000,
+        "A2": 1000,
+        "B1": 1000,
+        "B2": 1000,
+        "C1": 1000,
+        "C2": 1000
+      },
+      "usableDictionaryLemmas": 2020,
+      "dictionarySHA256": "3ccdc6145cf6b40d1eb60faedf9a5be3de7019a0b836ad957cc96cd89ed09cd5",
+      "pendingReviewCount": 0,
+      "cefrSource": "no new CEFR source; original levels retained"
+    },
+    "spanish": {
+      "total": 180,
+      "added": {
+        "A1": 30,
+        "A2": 30,
+        "B1": 30,
+        "B2": 30,
+        "C1": 30,
+        "C2": 30
+      },
+      "perLevel": {
+        "A1": 30,
+        "A2": 30,
+        "B1": 30,
+        "B2": 30,
+        "C1": 30,
+        "C2": 30
+      },
+      "targetPerLevel": {
+        "A1": 1124,
+        "A2": 1124,
+        "B1": 1123,
+        "B2": 1123,
+        "C1": 1123,
+        "C2": 1123
+      },
+      "shortfallPerLevel": {
+        "A1": 1094,
+        "A2": 1094,
+        "B1": 1093,
+        "B2": 1093,
+        "C1": 1093,
+        "C2": 1093
+      },
+      "usableDictionaryLemmas": 2261,
+      "dictionarySHA256": "3d89fc94e68d2fb1e127cb65ecdd99e2267107210b14d0ba3440218d63d0ee49",
+      "pendingReviewCount": 0,
+      "cefrSource": "editorial starter, not certified CEFR"
+    },
+    "azerbaijani": {
+      "total": 180,
+      "added": {
+        "A1": 30,
+        "A2": 30,
+        "B1": 30,
+        "B2": 30,
+        "C1": 30,
+        "C2": 30
+      },
+      "perLevel": {
+        "A1": 30,
+        "A2": 30,
+        "B1": 30,
+        "B2": 30,
+        "C1": 30,
+        "C2": 30
+      },
+      "targetPerLevel": {
+        "A1": 1124,
+        "A2": 1124,
+        "B1": 1123,
+        "B2": 1123,
+        "C1": 1123,
+        "C2": 1123
+      },
+      "shortfallPerLevel": {
+        "A1": 1094,
+        "A2": 1094,
+        "B1": 1093,
+        "B2": 1093,
+        "C1": 1093,
+        "C2": 1093
+      },
+      "usableDictionaryLemmas": 6756,
+      "dictionarySHA256": "9a0a2b14588cf84103b636bce2c09387d212c816ad4da9b21103dfe67d3edb27",
+      "pendingReviewCount": 0,
+      "cefrSource": "editorial starter, not certified CEFR"
+    }
+  }
+}

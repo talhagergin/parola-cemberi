@@ -101,7 +101,7 @@ struct RootView: View {
             LanguageSelectionView(onBack: { flow = .mainMenu }, onSelect: { flow = .levelSelection($0) })
         case .levelSelection(let language):
             LevelSelectionView(language: language, onBack: { flow = .languageSelection }) { level, questions in
-                flow = .languageLesson(language, level, questions)
+                if level.isUnlocked { flow = .languageLesson(language, level, questions) }
             }
         case .languageLesson(let language, let level, let questions):
             LanguageLessonView(language: language, level: level, sourceQuestions: questions,

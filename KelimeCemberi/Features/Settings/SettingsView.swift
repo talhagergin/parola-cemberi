@@ -57,9 +57,19 @@ struct SettingsView: View {
         .sheet(isPresented: $showAbout) {
             NavigationStack {
                 List {
-                    Section("Parola Çemberi") { Text("Türk alfabesinin 29 harfiyle oynanan özgün parola yarışması.") }
-                    Section("Gizlilik") { Text("Oyun ilerlemesi ve ayarlar yalnızca bu cihazda SwiftData ile saklanır. Uygulama kişisel veri toplamaz.") }
-                    Section("Sürüm") { Text("1.0 • Sprint 4") }
+                    Section("Parola Çemberi") { Text("28 harfli Türkçe kelime çemberi ve 6 dilde kelime alıştırmaları.") }
+                    Section("Gizlilik") {
+                        Text("Oyun ilerlemesi ve ayarlar bu cihazda saklanır. Reklamlar Google hizmetleri üzerinden sunulur.")
+                        Link("Google gizlilik politikası", destination: URL(string: "https://policies.google.com/privacy")!)
+                    }
+                    Section("Sözlük kaynakları") {
+                        Text("Yeni sözlük tanımları Türkçe Vikisözlük katkıcılarının çalışmalarından uyarlanmıştır (CC BY-SA 4.0). Tanımların kaynak bağlantıları soru paketlerinde bulunur.")
+                        Link("Vikisözlük", destination: URL(string: "https://tr.wiktionary.org/")!)
+                        Link("Kaikki / Wiktextract", destination: URL(string: "https://kaikki.org/trwiktionary/")!)
+                        Link("CC BY-SA 4.0", destination: URL(string: "https://creativecommons.org/licenses/by-sa/4.0/")!)
+                        Link("Kelly CEFR listeleri", destination: URL(string: "https://spraakbanken.gu.se/en/projects/kelly")!)
+                    }
+                    Section("Sürüm") { Text("1.0") }
                 }.navigationTitle("Hakkında").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Bitti") { showAbout = false } } }
             }.preferredColorScheme(.dark)
         }

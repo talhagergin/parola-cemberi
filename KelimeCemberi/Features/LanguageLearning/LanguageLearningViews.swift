@@ -6,7 +6,8 @@ struct LanguageSelectionView: View {
     var body: some View {
         ZStack {
             GameBackground()
-            VStack(spacing: GameSpacing.lg) {
+            ScrollView {
+              VStack(spacing: GameSpacing.lg) {
                 ScreenHeader(title: "DİL ÖĞREN", onBack: onBack)
                 Text("Öğrenmek istediğin dili seç").foregroundStyle(GameColors.textSecondary)
                 ForEach(LearningLanguage.allCases) { language in
@@ -23,8 +24,8 @@ struct LanguageSelectionView: View {
                         }
                     }.buttonStyle(.plain)
                 }
-                Spacer()
-            }.padding(GameSpacing.md)
+              }.padding(GameSpacing.md)
+            }
         }.preferredColorScheme(.dark)
     }
 }
@@ -43,17 +44,31 @@ struct LevelSelectionView: View {
                 VStack(spacing: GameSpacing.lg) {
                     ScreenHeader(title: language.title.uppercased(), flag: language, onBack: onBack)
                     Text("CEFR seviyeni seç").foregroundStyle(GameColors.textSecondary)
+                    if language == .spanish || language == .azerbaijani {
+                        Text("Başlangıç paketi · Seviyeler editoryal taslaktır")
+                            .font(.caption).foregroundStyle(GameColors.textSecondary)
+                    }
                     LazyVGrid(columns: [.init(.flexible()), .init(.flexible())], spacing: 14) {
                         ForEach(CEFRLevel.allCases) { level in
-                            Button { onSelect(level, questions.filter { $0.cefrLevel == level }) } label: {
+                            Button {
+                                guard level.isUnlocked else { return }
+                                onSelect(level, questions.filter { $0.cefrLevel == level })
+                            } label: {
                                 GlassPanel {
                                     VStack(spacing: 8) {
-                                        Text(level.rawValue).font(.system(size: 34, weight: .heavy, design: .rounded)).foregroundStyle(GameColors.cyan)
+                                        HStack(spacing: 8) {
+                                            Text(level.rawValue).font(.system(size: 34, weight: .heavy, design: .rounded))
+                                            if !level.isUnlocked { Image(systemName: "lock.fill").font(.title3) }
+                                        }.foregroundStyle(level.isUnlocked ? GameColors.cyan : GameColors.textSecondary)
                                         Text(level.subtitle).font(.subheadline.bold()).foregroundStyle(.white)
+                                        Text(level.isUnlocked ? "Açık" : "Kilitli").font(.caption.bold()).foregroundStyle(GameColors.textSecondary)
                                         Text("\(questions.count { $0.cefrLevel == level }) soru").font(.caption).foregroundStyle(GameColors.textSecondary)
                                     }.padding(16).frame(maxWidth: .infinity, minHeight: 130)
                                 }
-                            }.buttonStyle(.plain).disabled(questions.isEmpty)
+                            }.buttonStyle(.plain)
+                                .disabled(!level.isUnlocked || !questions.contains { $0.cefrLevel == level })
+                                .opacity(level.isUnlocked ? 1 : 0.6)
+                                .accessibilityLabel("\(level.rawValue), \(level.isUnlocked ? "Açık" : "Kilitli")")
                         }
                     }
                     if let errorMessage { Text(errorMessage).foregroundStyle(GameColors.danger).font(.caption) }
@@ -88,6 +103,9 @@ struct LanguageLessonView: View {
     @State private var didPlayCompletionSound = false
     @State private var didReportCompletion = false
     @State private var timerTask: Task<Void, Never>?
+    @State private var feedbackTask: Task<Void, Never>?
+    @Environment(\.scenePhase) private var scenePhase
+    @FocusState private var isAnswerFocused: Bool
 
     private var activeItem: LanguageCircleItem? { activeIndex.flatMap { letters.indices.contains($0) ? letters[$0] : nil } }
     var body: some View {
@@ -112,7 +130,8 @@ struct LanguageLessonView: View {
                             }
                         }
                         VStack(spacing: 10) {
-                            TextField("Cevabını yaz…", text: $answer).textInputAutocapitalization(.characters).autocorrectionDisabled().submitLabel(.done)
+                            TextField("Cevabını yaz…", text: $answer).textInputAutocapitalization(.never).autocorrectionDisabled().submitLabel(.done)
+                                .focused($isAnswerFocused)
                                 .onSubmit(submit).padding(.horizontal, 16).frame(minHeight: 50)
                                 .background(GameColors.background.opacity(0.8), in: RoundedRectangle(cornerRadius: 16)).foregroundStyle(.white)
                             HStack(spacing: 10) {
@@ -142,12 +161,15 @@ struct LanguageLessonView: View {
         }
         .preferredColorScheme(.dark)
         .onAppear { prepare() }
-        .onDisappear { timerTask?.cancel() }
+        .onDisappear {
+            timerTask?.cancel()
+            feedbackTask?.cancel()
+        }
     }
 
     private var resultOverlay: some View {
-        let passedItems = letters.filter { $0.status != .correct && $0.passCount > 0 }
-        let wrongItems = letters.filter { $0.status == .wrong && $0.passCount == 0 }
+        let passedItems = letters.filter { $0.status != .correct && $0.passCount > 0 && !$0.answerWasSubmitted }
+        let wrongItems = letters.filter { $0.status == .wrong && ($0.answerWasSubmitted || $0.passCount == 0) }
         return ZStack {
             Color.black.opacity(0.78).ignoresSafeArea()
             GlassPanel {
@@ -173,13 +195,17 @@ struct LanguageLessonView: View {
 
     private func prepare() {
         guard letters.isEmpty else { return }
+        guard level.isUnlocked else {
+            preparationError = "Bu seviye şu anda kilitli."
+            return
+        }
         let grouped = Dictionary(grouping: sourceQuestions, by: { $0.initialLetter.uppercased() })
-        let missingLetters = language.alphabet.filter { grouped[$0]?.isEmpty != false }
-        guard missingLetters.isEmpty else {
+        let roundAlphabet = language.roundAlphabet(for: sourceQuestions)
+        guard !roundAlphabet.isEmpty else {
             preparationError = "Bu seviyenin soru paketi eksik. Çember başlatılamadı."
             return
         }
-        letters = language.alphabet.compactMap { letter in
+        letters = roundAlphabet.compactMap { letter in
             grouped[letter]?.randomElement().map {
                 LanguageCircleItem(letter: letter, question: $0, status: .waiting)
             }
@@ -188,6 +214,7 @@ struct LanguageLessonView: View {
         timerTask = Task { @MainActor in
             while !Task.isCancelled && remainingSeconds > 0 && !isFinished {
                 try? await Task.sleep(for: .seconds(1)); guard !Task.isCancelled else { return }
+                guard scenePhase == .active else { continue }
                 remainingSeconds -= 1
                 if remainingSeconds <= 10, remainingSeconds > 0, !didPlayTimeWarning {
                     didPlayTimeWarning = true
@@ -199,21 +226,27 @@ struct LanguageLessonView: View {
     }
 
     private func submit() {
-        guard feedback == nil, let index = activeIndex, let question = letters[index].question else { return }
+        guard !isFinished, scenePhase == .active, !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              feedback == nil, let index = activeIndex, let question = letters[index].question else { return }
         let correct = question.matches(answer)
+        letters[index].answerWasSubmitted = true
         letters[index].status = correct ? .correct : .wrong
         if correct { correctCount += 1; streak += 1; score += 100 + max(0, streak - 1) * 15 }
         else { streak = 0 }
         GameAudioManager.shared.play(correct && streak >= 3 ? .streak : correct ? .correct : .wrong, enabled: soundEffectsEnabled)
         feedback = LanguageFeedback(correct: correct, title: correct ? "DOĞRU!" : "YANLIŞ • \(question.answer)")
         answer = ""
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(650)); feedback = nil; activateNext(after: index)
+        feedbackTask?.cancel()
+        feedbackTask = Task { @MainActor in
+            do { try await Task.sleep(for: .milliseconds(650)) } catch { return }
+            guard !isFinished else { return }
+            feedback = nil
+            activateNext(after: index)
         }
     }
 
     private func pass() {
-        guard feedback == nil, let index = activeIndex else { return }
+        guard !isFinished, scenePhase == .active, feedback == nil, let index = activeIndex else { return }
         letters[index].passCount += 1
         if letters[index].passCount >= 2 { letters[index].status = .wrong; streak = 0 }
         else { letters[index].status = .passed }
@@ -233,6 +266,9 @@ struct LanguageLessonView: View {
 
     private func finish() {
         guard !isFinished else { return }
+        feedbackTask?.cancel()
+        feedback = nil
+        isAnswerFocused = false
         timerTask?.cancel(); activeIndex = nil; isFinished = true
         for index in letters.indices where [.waiting, .active, .passed].contains(letters[index].status) { letters[index].status = .wrong }
         if !didPlayCompletionSound {
@@ -279,6 +315,25 @@ struct LanguageFlagView: View {
                         Color.white
                         Color(red: 0.08, green: 0.20, blue: 0.48)
                     }
+                case .spanish:
+                    VStack(spacing: 0) {
+                        Color(red: 0.68, green: 0.05, blue: 0.12)
+                        Color(red: 1.0, green: 0.76, blue: 0.0).frame(height: proxy.size.height / 2)
+                        Color(red: 0.68, green: 0.05, blue: 0.12)
+                    }
+                case .azerbaijani:
+                    ZStack {
+                        VStack(spacing: 0) {
+                            Color(red: 0.0, green: 0.60, blue: 0.78)
+                            Color(red: 0.88, green: 0.08, blue: 0.23)
+                            Color(red: 0.0, green: 0.62, blue: 0.35)
+                        }
+                        HStack(spacing: 1) {
+                            Image(systemName: "moon.fill").rotationEffect(.degrees(-25))
+                            eightPointedStar
+                                .frame(width: proxy.size.height * 0.18, height: proxy.size.height * 0.18)
+                        }.font(.system(size: proxy.size.height * 0.22)).foregroundStyle(.white)
+                    }
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: max(3, proxy.size.height * 0.14)))
@@ -300,6 +355,22 @@ struct LanguageFlagView: View {
         }
         .stroke(color, style: StrokeStyle(lineWidth: width, lineCap: .butt))
     }
+
+    private var eightPointedStar: some View {
+        GeometryReader { proxy in
+            Path { path in
+                let radius = min(proxy.size.width, proxy.size.height) / 2
+                let center = CGPoint(x: proxy.size.width / 2, y: proxy.size.height / 2)
+                for index in 0..<16 {
+                    let angle = Double(index) * .pi / 8 - .pi / 2
+                    let length = index.isMultiple(of: 2) ? radius : radius * 0.4
+                    let point = CGPoint(x: center.x + cos(angle) * length, y: center.y + sin(angle) * length)
+                    if index == 0 { path.move(to: point) } else { path.addLine(to: point) }
+                }
+                path.closeSubpath()
+            }.fill(.white)
+        }
+    }
 }
 
 private struct LanguageFeedback { let correct: Bool; let title: String }
@@ -309,6 +380,7 @@ private struct LanguageCircleItem: Identifiable {
     let question: LanguageLearningQuestion?
     var status: LanguageCircleStatus
     var passCount = 0
+    var answerWasSubmitted = false
     var id: String { letter }
 }
 

@@ -3,7 +3,7 @@ import XCTest
 
 final class GameModeTests: XCTestCase {
     func testClassicAndQuickConfigurations() {
-        XCTAssertEqual(GameMode.classic.configuration.letters.count, 29)
+        XCTAssertEqual(GameMode.classic.configuration.letters.count, 28)
         XCTAssertEqual(GameMode.classic.configuration.durationSeconds, 120)
         XCTAssertEqual(GameMode.quick.configuration.letters.count, 10)
         XCTAssertEqual(GameMode.quick.configuration.durationSeconds, 60)

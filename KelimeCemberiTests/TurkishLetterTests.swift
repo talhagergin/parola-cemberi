@@ -3,8 +3,10 @@ import XCTest
 
 final class TurkishLetterTests: XCTestCase {
     func testAlphabetHasCorrectOrderAndCount() {
-        XCTAssertEqual(TurkishLetter.allCases.count, 29)
-        XCTAssertEqual(TurkishLetter.allCases.map(\.rawValue).joined(), "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ")
+        XCTAssertEqual(TurkishLetter.allCases.count, 28)
+        XCTAssertEqual(TurkishLetter.allCases.map(\.rawValue).joined(), "ABCÇDEFGHIİJKLMNOÖPRSŞTUÜVYZ")
+        XCTAssertFalse(GameConfiguration.classic.letters.contains(.gBreve))
+        XCTAssertEqual(TurkishLetter(rawValue: "Ğ"), .gBreve)
     }
 
     func testTurkishInitialLetterDerivation() {

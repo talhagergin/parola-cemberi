@@ -13,11 +13,24 @@ final class AdService: NSObject, FullScreenContentDelegate {
     private var didInitialize = false
     private var interstitial: InterstitialAd?
     private var isLoadingInterstitial = false
+    private var preparationTask: Task<Void, Never>?
+    private var isPresenting = false
 
     private override init() { super.init() }
 
     func prepare() async {
         guard !didInitialize else { return }
+        if let preparationTask {
+            await preparationTask.value
+            return
+        }
+        let task = Task { @MainActor in await self.requestConsent() }
+        preparationTask = task
+        await task.value
+        preparationTask = nil
+    }
+
+    private func requestConsent() async {
 #if canImport(UserMessagingPlatform)
         let parameters = RequestParameters()
         await withCheckedContinuation { continuation in
@@ -45,10 +58,15 @@ final class AdService: NSObject, FullScreenContentDelegate {
     }
 
     func showInterstitial() async {
-        guard canRequestAds else { return }
-        if interstitial == nil { await loadInterstitial() }
+        guard canRequestAds, !isPresenting else { return }
+        // A missed preload must never hold the results screen behind a network request.
+        guard interstitial != nil else {
+            Task { await loadInterstitial() }
+            return
+        }
         guard let interstitial, let controller = rootViewController else { return }
         self.interstitial = nil
+        isPresenting = true
         interstitial.present(from: controller)
     }
 
@@ -63,11 +81,20 @@ final class AdService: NSObject, FullScreenContentDelegate {
         } catch { interstitial = nil }
     }
 
-    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) { Task { await loadInterstitial() } }
-    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) { Task { await loadInterstitial() } }
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+        isPresenting = false
+        Task { await loadInterstitial() }
+    }
+    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        isPresenting = false
+        Task { await loadInterstitial() }
+    }
 
     private var rootViewController: UIViewController? {
-        UIApplication.shared.connectedScenes.compactMap { ($0 as? UIWindowScene)?.keyWindow?.rootViewController }.first
+        guard let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+              var controller = scene.keyWindow?.rootViewController else { return nil }
+        while let presented = controller.presentedViewController { controller = presented }
+        return controller
     }
 }
 

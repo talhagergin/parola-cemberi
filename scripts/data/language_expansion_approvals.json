@@ -1,0 +1,86 @@
+{
+  "english": {
+    "A1": {
+      "SUMMER": "Yaz mevsimi", "EVENING": "Akşam", "CARD": "Kart", "AIR": "Hava",
+      "TEN": "On (sayı)", "SAFE": "Güvenli", "FINISH": "Bitirmek", "WINDOW": "Pencere",
+      "ANIMAL": "Hayvan", "WHITE": "Beyaz", "WALL": "Duvar", "STATION": "İstasyon",
+      "SEVEN": "Yedi", "MOTHER": "Anne", "WEEKEND": "Hafta sonu", "RED": "Kırmızı",
+      "BUS": "Otobüs", "GLASS": "Bardak", "BALL": "Top (oyuncak)", "NINE": "Dokuz",
+      "LEG": "Bacak", "CLEAN": "Temiz", "HORSE": "At", "DRY": "Kuru", "BAG": "Çanta",
+      "WINE": "Şarap", "YESTERDAY": "Dün", "DINNER": "Akşam yemeği", "FRUIT": "Meyve",
+      "HAIR": "Saç", "COFFEE": "Kahve", "MOUTH": "Ağız", "BREAKFAST": "Kahvaltı",
+      "TAXI": "Taksi", "WASH": "Yıkamak", "PLATE": "Tabak", "BOTTLE": "Şişe",
+      "WET": "Islak", "CLOTHES": "Giysiler", "CUP": "Fincan", "BIRTHDAY": "Doğum günü",
+      "EGG": "Yumurta", "MEAT": "Et", "MILK": "Süt", "VEGETABLE": "Sebze",
+      "BATHROOM": "Banyo", "BROWN": "Kahverengi", "NECK": "Boyun", "TOOTH": "Diş",
+      "TROUSERS": "Pantolon", "THURSDAY": "Perşembe", "FEBRUARY": "Şubat", "MARCH": "Mart",
+      "JUNE": "Haziran", "OCTOBER": "Ekim", "DECEMBER": "Aralık", "HELLO": "Merhaba"
+    },
+    "A2": {
+      "WEBSITE": "İnternet sitesi", "FAVOURITE": "En sevilen", "CASH": "Nakit para",
+      "BOAT": "Tekne", "GAS": "Gaz", "BILL": "Fatura", "POOL": "Havuz",
+      "MEANING": "Anlam", "CHAPTER": "Bölüm (kitapta)", "BURN": "Yanmak",
+      "MENU": "Menü", "MOVIE": "Film", "DREAM": "Rüya", "COMFORTABLE": "Rahat",
+      "MOUNTAIN": "Dağ", "AMAZING": "Şaşırtıcı", "THEATRE": "Tiyatro", "SPRING": "İlkbahar",
+      "PRACTISE": "Alıştırma yapmak", "REMIND": "Hatırlatmak", "TEMPERATURE": "Sıcaklık",
+      "REPEAT": "Tekrarlamak", "STRANGE": "Tuhaf", "ENTRANCE": "Giriş",
+      "HEIGHT": "Yükseklik", "BEACH": "Plaj", "LEAF": "Yaprak", "HIDE": "Saklanmak",
+      "SKIN": "Deri (vücut)", "MISTAKE": "Hata", "CAREful": "Dikkatli",
+      "WEDDING": "Düğün", "POCKET": "Cep", "THICK": "Kalın", "SWEET": "Tatlı"
+    },
+    "B1": {
+      "CERTIFICATE": "Sertifika", "RAILWAY": "Demir yolu", "MEDICINE": "İlaç",
+      "CRISIS": "Kriz", "CITIZEN": "Vatandaş", "PASSENGER": "Yolcu",
+      "ADVERTISING": "Reklamcılık", "ABROAD": "Yurt dışında", "DEBT": "Borç",
+      "CONVINCE": "İkna etmek", "POVERTY": "Yoksulluk", "TEMPORARY": "Geçici",
+      "PROOF": "Kanıt", "FACTORY": "Fabrika", "SYMPTOM": "Belirti",
+      "ADVENTURE": "Macera", "TOURIST": "Turist", "PERSUADE": "İkna etmek (razı etmek)",
+      "DISCOUNT": "İndirim", "DISASTER": "Afet"
+    }
+  },
+  "italian": {
+    "A1": {
+      "QUESTO": "Bu", "GRANDE": "Büyük", "NUMERO": "Sayı", "DUE": "İki",
+      "PERCHÉ": "Neden", "LORO": "Onlar", "CHI": "Kim", "MONDO": "Dünya",
+      "OGGI": "Bugün", "IO": "Ben", "ORA": "Şimdi", "SCRIVERE": "Yazmak",
+      "TRE": "Üç", "ARRIVARE": "Varmak", "MESE": "Ay (takvim)", "PICCOLO": "Küçük",
+      "PAROLA": "Kelime", "LEGGERE": "Okumak", "VIVERE": "Yaşamak", "BUONO": "İyi",
+      "LUNGO": "Uzun", "PAGINA": "Sayfa", "DOMANDA": "Soru", "APRIRE": "Açmak",
+      "CITTÀ": "Şehir", "RISPONDERE": "Cevap vermek", "PARTIRE": "Yola çıkmak",
+      "DONNA": "Kadın", "DICEMBRE": "Aralık", "LUGLIO": "Temmuz", "GIUGNO": "Haziran",
+      "LAVORARE": "Çalışmak", "MARZO": "Mart", "GUARDARE": "Bakmak", "LETTERA": "Mektup",
+      "COMINCIARE": "Başlamak", "FINIRE": "Bitirmek", "LIBRO": "Kitap", "SEMPLICE": "Basit",
+      "MAGGIO": "Mayıs", "APRILE": "Nisan", "GENNAIO": "Ocak", "VECCHIO": "Yaşlı",
+      "SEI": "Altı", "SETTIMANA": "Hafta", "FEBBRAIO": "Şubat", "NOVEMBRE": "Kasım",
+      "GIOVANE": "Genç", "AIUTARE": "Yardım etmek", "CHIUDERE": "Kapatmak",
+      "AMORE": "Sevgi", "CUORE": "Kalp", "CINQUE": "Beş", "IERI": "Dün",
+      "INCONTRARE": "Buluşmak", "MUSICA": "Müzik", "FACILE": "Kolay", "PRONTO": "Hazır",
+      "GIOCARE": "Oynamak", "SERA": "Akşam", "MINUTO": "Dakika", "STUDENTE": "Öğrenci",
+      "TESTA": "Baş (vücut)", "NERO": "Siyah", "COLORE": "Renk", "DIECI": "On (sayı)",
+      "BIANCO": "Beyaz", "ASCOLTARE": "Dinlemek", "DOVE": "Nerede", "QUANDO": "Ne zaman"
+    },
+    "A2": {
+      "MANDARE": "Göndermek", "MACCHINA": "Makine", "CADERE": "Düşmek", "PIEDE": "Ayak",
+      "NORD": "Kuzey", "GUIDARE": "Araç sürmek", "BANCA": "Banka", "PAURA": "Korku",
+      "ARIA": "Hava", "SUD": "Güney", "VENDERE": "Satmak", "SALIRE": "Yukarı çıkmak",
+      "FUOCO": "Ateş", "SCENDERE": "Aşağı inmek", "DESTRA": "Sağ (yön)",
+      "GIRARE": "Dönmek", "STAGIONE": "Mevsim", "GIORNALE": "Gazete", "IMPARARE": "Öğrenmek",
+      "FRATELLO": "Erkek kardeş", "VENERDÌ": "Cuma", "MANGIARE": "Yemek yemek",
+      "MATTINA": "Sabah", "CHIAVE": "Anahtar", "FESTA": "Kutlama", "DOMANI": "Yarın",
+      "CIELO": "Gökyüzü", "COMPRARE": "Satın almak", "LUNEDÌ": "Pazartesi",
+      "INSEGNANTE": "Öğretmen", "CLIENTE": "Müşteri", "FELICE": "Mutlu",
+      "MOGLIE": "Eş (kadın)", "OSPEDALE": "Hastane", "CALDO": "Sıcak", "FREDDO": "Soğuk",
+      "MARTEDÌ": "Salı", "MERCOLEDÌ": "Çarşamba", "TELEFONO": "Telefon",
+      "BIBLIOTECA": "Kütüphane", "VELOCE": "Hızlı", "BRACCIO": "Kol", "BOCCA": "Ağız",
+      "MONTAGNA": "Dağ", "FINESTRA": "Pencere", "RIDERE": "Gülmek", "CANTARE": "Şarkı söylemek"
+    },
+    "B1": {
+      "CONCORRENZA": "Rekabet", "AVVENTURA": "Macera", "DIVIETO": "Yasak",
+      "TRADUZIONE": "Çeviri", "CONVINZIONE": "Kanaat", "ARCHITETTURA": "Mimarlık",
+      "DEBITO": "Borç", "STIMA": "Saygı ve değer verme", "ACCOGLIENZA": "Karşılama",
+      "VEICOLO": "Taşıt", "CONFORMITÀ": "Uygunluk", "AGEVOLARE": "Kolaylaştırmak",
+      "AMPLIARE": "Genişletmek", "SPETTATORE": "İzleyici", "ABUSO": "Kötüye kullanım",
+      "DIPENDENZA": "Bağımlılık", "ENTUSIASMO": "Coşku"
+    }
+  }
+}
