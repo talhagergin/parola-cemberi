@@ -21,7 +21,7 @@ PAROLA_TEST_PLATFORM=ios flutter drive --driver=test_driver/integration_test.dar
 PAROLA_TEST_PLATFORM=android flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d <android-emulator> --dart-define=DISABLE_ADS=true
 ```
 
-Ekran görüntüleri `verification/ios` ve `verification/android` altında üretilir. İkon ve açılış ekranını yeniden üretmek için `dart run flutter_launcher_icons` ve `dart run flutter_native_splash:create` çalıştırın.
+Test sürücüsü iOS ekran görüntülerini `verification/ios` altında üretir. Android ekran görüntüleri `adb shell screencap` ile alınır; Flutter'ın görüntü yüzeyine dönüştürme özelliği bazı emülatör grafik sürücülerinde takılabilir. Aynı durumda Android test komutuna `--no-enable-impeller --enable-software-rendering` eklenebilir; bu yalnızca emülatör testine yönelik bir geçici çözümdür. İkon ve açılış ekranını yeniden üretmek için `dart run flutter_launcher_icons` ve `dart run flutter_native_splash:create` çalıştırın.
 
 ## Korunan kurallar
 

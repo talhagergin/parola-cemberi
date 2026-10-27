@@ -146,6 +146,9 @@ class GameAudio {
       'complete',
     ]) {
       final player = AudioPlayer();
+      // Short SoundPool effects have no playback-position UI or completion
+      // callbacks. Frame polling would otherwise keep scheduling UI frames.
+      player.positionUpdater = null;
       if (Platform.isAndroid) await player.setPlayerMode(PlayerMode.lowLatency);
       await player.setReleaseMode(ReleaseMode.stop);
       await player.setVolume(.75);
@@ -176,6 +179,14 @@ class GameAudio {
     } catch (e) {
       debugPrint('Audio: $e');
     }
+  }
+
+  Future<void> dispose() async {
+    _generation++;
+    for (final player in _players.values) {
+      await player.dispose();
+    }
+    _players.clear();
   }
 }
 
